@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.hieutm.homepi.ui.commander.CommanderFragment"
+        android:label="@string/title_commanders"
+        tools:layout="@layout/fragment_commander" />
+
+    <fragment
+        android:id="@+id/navigation_dashboard"
+        android:name="com.hieutm.homepi.ui.device.DeviceFragment"
+        android:label="@string/title_devices"
+        tools:layout="@layout/fragment_device" />
+
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="com.hieutm.homepi.ui.settings.SettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@layout/fragment_settings" />
+</navigation>
