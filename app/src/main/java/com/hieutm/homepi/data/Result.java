@@ -45,4 +45,9 @@ public class Result<T> {
             return this.error;
         }
     }
+
+    public interface ResultHandler<T> {
+        void onSuccess(Success<T> result);
+        void onError(Error error);
+    }
 }

@@ -1,24 +1,23 @@
 package com.hieutm.homepi.ui.login;
 
+import android.util.Patterns;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import android.util.Patterns;
-
-import com.hieutm.homepi.data.LoginRepository;
+import com.hieutm.homepi.R;
+import com.hieutm.homepi.auth.AuthenticationService;
 import com.hieutm.homepi.data.Result;
 import com.hieutm.homepi.data.model.LoggedInUser;
-import com.hieutm.homepi.R;
 
 public class LoginViewModel extends ViewModel {
+    private final MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
+    private final MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
+    private final AuthenticationService authService;
 
-    private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
-    private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
-    private LoginRepository loginRepository;
-
-    LoginViewModel(LoginRepository loginRepository) {
-        this.loginRepository = loginRepository;
+    LoginViewModel(AuthenticationService authService) {
+        this.authService = authService;
     }
 
     LiveData<LoginFormState> getLoginFormState() {
@@ -30,15 +29,17 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void login(String username, String password) {
-        // can be launched in a separate asynchronous job
-        Result<LoggedInUser> result = loginRepository.login(username, password);
+        authService.logIn(username, password, new Result.ResultHandler<LoggedInUser>() {
+            @Override
+            public void onSuccess(Result.Success<LoggedInUser> result) {
+                loginResult.setValue(new LoginResult(new LoggedInUserView(result.getData().getDisplayName())));
+            }
 
-        if (result instanceof Result.Success) {
-            LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
-        } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
-        }
+            @Override
+            public void onError(Result.Error error) {
+                loginResult.setValue(new LoginResult(R.string.login_failed));
+            }
+        });
     }
 
     public void loginDataChanged(String username, String password) {

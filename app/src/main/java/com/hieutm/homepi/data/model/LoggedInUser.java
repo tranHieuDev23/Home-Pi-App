@@ -1,7 +1,7 @@
 package com.hieutm.homepi.data.model;
 
 /**
- * Data class that captures user information for logged in users retrieved from LoginRepository
+ * Data class that captures user information for logged in users
  */
 public class LoggedInUser {
 
