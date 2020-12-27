@@ -16,15 +16,15 @@ import com.hieutm.homepi.data.model.Commander;
 import java.util.List;
 
 public class CommanderListAdapter extends ArrayAdapter<Commander> {
-    public interface UnregisterListener {
+    public interface ItemClickListener {
         void onUnregister(Commander commander);
     }
 
-    private final UnregisterListener unregisterListener;
+    private final ItemClickListener itemClickListener;
 
-    public CommanderListAdapter(@NonNull Context context, @NonNull List<Commander> objects, UnregisterListener unregisterListener) {
+    public CommanderListAdapter(@NonNull Context context, @NonNull List<Commander> objects, ItemClickListener itemClickListener) {
         super(context, 0, objects);
-        this.unregisterListener = unregisterListener;
+        this.itemClickListener = itemClickListener;
     }
 
     public void setCommanders(List<Commander> commanders) {
@@ -42,10 +42,9 @@ public class CommanderListAdapter extends ArrayAdapter<Commander> {
         }
         TextView deviceTitleView = convertView.findViewById(R.id.device_title_view);
         TextView deviceSubtitleView = convertView.findViewById(R.id.device_subtitle_view);
-        TextView unregisterTextView = convertView.findViewById(R.id.unregister_option);
         deviceTitleView.setText(commander.getDisplayName());
         deviceSubtitleView.setText(commander.getId());
-        unregisterTextView.setOnClickListener(v -> unregisterListener.onUnregister(commander));
+        convertView.setOnClickListener(v -> itemClickListener.onUnregister(commander));
         return convertView;
     }
 }

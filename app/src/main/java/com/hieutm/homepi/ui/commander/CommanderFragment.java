@@ -15,12 +15,15 @@ import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hieutm.homepi.R;
+import com.hieutm.homepi.data.model.Commander;
 import com.hieutm.homepi.ui.AppViewModelFactory;
 import com.hieutm.homepi.ui.registercommander.RegisterCommanderActivity;
 
 import java.util.ArrayList;
 
 public class CommanderFragment extends Fragment {
+
+    private CommanderViewModel commanderViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -32,10 +35,10 @@ public class CommanderFragment extends Fragment {
 
         final ViewModelProvider.Factory viewModelFactory = AppViewModelFactory.getInstance(activity.getApplicationContext());
         final ViewModelProvider modelProvider = new ViewModelProvider((ViewModelStoreOwner) activity, viewModelFactory);
-        CommanderViewModel commanderViewModel = modelProvider.get(CommanderViewModel.class);
+        commanderViewModel = modelProvider.get(CommanderViewModel.class);
 
         ListView commanderListView = root.findViewById(R.id.commander_list_view);
-        CommanderListAdapter adapter = new CommanderListAdapter(activity, new ArrayList<>(), commander -> commanderViewModel.unregisterCommander(commander.getId()));
+        CommanderListAdapter adapter = new CommanderListAdapter(activity, new ArrayList<>(), this::showBottomSheet);
         commanderListView.setAdapter(adapter);
         commanderViewModel.getCommanders().observe(getActivity(), adapter::setCommanders);
 
@@ -46,5 +49,10 @@ public class CommanderFragment extends Fragment {
         });
 
         return root;
+    }
+
+    private void showBottomSheet(Commander commander) {
+        CommanderBottomSheetFragment bottomSheet = new CommanderBottomSheetFragment(commander, c -> commanderViewModel.unregisterCommander(commander.getId()));
+        bottomSheet.show(getParentFragmentManager(), "Commander Bottom Sheet");
     }
 }

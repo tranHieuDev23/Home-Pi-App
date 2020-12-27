@@ -45,11 +45,9 @@ public class DeviceListAdapter extends ArrayAdapter<Device> {
         ImageView deviceImageView = convertView.findViewById(R.id.device_image_view);
         TextView deviceTitleView = convertView.findViewById(R.id.device_title_view);
         TextView deviceSubtitleView = convertView.findViewById(R.id.device_subtitle_view);
-        TextView unregisterTextView = convertView.findViewById(R.id.unregister_option);
         deviceImageView.setImageResource(getDeviceImageResourceId(device.getType()));
         deviceTitleView.setText(device.getDisplayName());
         deviceSubtitleView.setText(device.getId());
-        unregisterTextView.setOnClickListener(v -> unregisterListener.onUnregister(device));
         return convertView;
     }
 
