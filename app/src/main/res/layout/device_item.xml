@@ -19,35 +19,46 @@
         app:layout_constraintTop_toBottomOf="parent"
         app:srcCompat="@drawable/ic_launcher_foreground" />
 
-    <TextView
-        android:id="@+id/device_title_view"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:scrollHorizontally="true"
-        android:text="@string/device_list_item_name"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/device_image_view"
         app:layout_constraintRight_toLeftOf="@id/unregister_option"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/device_subtitle_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:scrollHorizontally="true"
-        android:text="@string/device_list_item_description"
-        android:textSize="14sp"
-        android:textStyle="italic"
-        app:layout_constraintLeft_toRightOf="@id/device_image_view"
-        app:layout_constraintTop_toBottomOf="@id/device_title_view" />
+        <TextView
+            android:id="@+id/device_title_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/device_list_item_name"
+            android:textAlignment="viewStart"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/device_subtitle_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/device_list_item_description"
+            android:textAlignment="viewStart"
+            android:textSize="14sp"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/device_title_view" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <TextView
         android:id="@+id/unregister_option"
