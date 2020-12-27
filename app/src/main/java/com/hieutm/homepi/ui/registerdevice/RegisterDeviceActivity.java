@@ -1,4 +1,4 @@
-package com.hieutm.homepi.ui.registercommander;
+package com.hieutm.homepi.ui.registerdevice;
 
 import android.os.Bundle;
 
@@ -7,14 +7,14 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.hieutm.homepi.R;
 
-public class RegisterCommanderActivity extends AppCompatActivity {
+public class RegisterDeviceActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_commander);
-        RegisterCommanderPagerAdapter registerCommanderPagerAdapter = new RegisterCommanderPagerAdapter(this, getSupportFragmentManager());
+        RegisterDevicePagerAdapter registerDevicePagerAdapter = new RegisterDevicePagerAdapter(this, getSupportFragmentManager());
         ViewPager viewPager = findViewById(R.id.register_device_view_pager);
-        viewPager.setAdapter(registerCommanderPagerAdapter);
+        viewPager.setAdapter(registerDevicePagerAdapter);
     }
 }

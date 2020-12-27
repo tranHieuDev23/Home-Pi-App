@@ -39,6 +39,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.home.HomeActivity" />
         </activity>
+        <activity
+            android:name=".ui.registerdevice.RegisterDeviceActivity"
+            android:label="@string/register_device_activity_register_device">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.home.HomeActivity" />
+        </activity>
     </application>
 
 </manifest>

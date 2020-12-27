@@ -24,4 +24,7 @@
     <string name="register_commander_activity_register_commander">Register commander</string>
     <string name="register_commander_activity_find_device">Find device</string>
     <string name="register_commander_activity_connect_wifi">Connect WiFi</string>
+    <string name="register_device_activity_register_device">Register device</string>
+    <string name="register_device_activity_find_device">Find device</string>
+    <string name="register_device_activity_connect_wifi">Connect WiFi</string>
 </resources>
