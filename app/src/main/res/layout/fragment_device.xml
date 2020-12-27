@@ -17,12 +17,11 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:clickable="true"
-        android:contentDescription="@string/add_device"
+        android:contentDescription="@string/home_activity_add_device"
         android:focusable="true"
         android:src="@drawable/ic_add_white_24"
         app:layout_constraintBottom_toBottomOf="parent"

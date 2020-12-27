@@ -17,12 +17,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/register_commander_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:clickable="true"
-        android:contentDescription="@string/add_commander_device"
+        android:contentDescription="@string/home_activity_add_commander_device"
         android:focusable="true"
         android:src="@drawable/ic_add_white_24"
         app:layout_constraintBottom_toBottomOf="parent"

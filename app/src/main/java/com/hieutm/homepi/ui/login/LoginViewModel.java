@@ -37,16 +37,16 @@ public class LoginViewModel extends ViewModel {
 
             @Override
             public void onError(Result.Error error) {
-                loginResult.setValue(new LoginResult(R.string.login_failed));
+                loginResult.setValue(new LoginResult(R.string.login_activity_login_failed));
             }
         });
     }
 
     public void loginDataChanged(String username, String password) {
         if (!isUserNameValid(username)) {
-            loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
+            loginFormState.setValue(new LoginFormState(R.string.login_activity_invalid_username, null));
         } else if (!isPasswordValid(password)) {
-            loginFormState.setValue(new LoginFormState(null, R.string.invalid_password));
+            loginFormState.setValue(new LoginFormState(null, R.string.login_activity_invalid_password));
         } else {
             loginFormState.setValue(new LoginFormState(true));
         }

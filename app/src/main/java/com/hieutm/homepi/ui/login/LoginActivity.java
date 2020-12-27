@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + ' ' + model.getDisplayName();
+        String welcome = getString(R.string.login_activity_welcome) + ' ' + model.getDisplayName();
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);

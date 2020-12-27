@@ -1,21 +1,22 @@
 package com.hieutm.homepi.ui.commander;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hieutm.homepi.R;
-import com.hieutm.homepi.data.model.Commander;
 import com.hieutm.homepi.ui.AppViewModelFactory;
+import com.hieutm.homepi.ui.registercommander.RegisterCommanderActivity;
 
 import java.util.ArrayList;
 
@@ -37,6 +38,12 @@ public class CommanderFragment extends Fragment {
         CommanderListAdapter adapter = new CommanderListAdapter(activity, new ArrayList<>(), commander -> commanderViewModel.unregisterCommander(commander.getId()));
         commanderListView.setAdapter(adapter);
         commanderViewModel.getCommanders().observe(getActivity(), adapter::setCommanders);
+
+        FloatingActionButton registerCommander = root.findViewById(R.id.register_commander_fab);
+        registerCommander.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), RegisterCommanderActivity.class);
+            startActivity(intent);
+        });
 
         return root;
     }

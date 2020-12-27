@@ -35,7 +35,7 @@ public class DeviceViewModel extends ViewModel {
             @Override
             public void onError(Result.Error error) {
                 Log.e(DeviceViewModel.class.getName(), error.getError().getMessage());
-                errors.setValue(R.string.cannot_connect);
+                errors.setValue(R.string.error_cannot_connect);
             }
         });
     }
@@ -60,7 +60,7 @@ public class DeviceViewModel extends ViewModel {
             @Override
             public void onError(Result.Error error) {
                 Log.e(DeviceViewModel.class.getName(), error.getError().getMessage());
-                errors.setValue(R.string.cannot_connect);
+                errors.setValue(R.string.error_cannot_connect);
             }
         });
     }

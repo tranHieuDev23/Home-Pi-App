@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.hieutm.homepi.R;
@@ -19,8 +20,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
+        ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar != null) {
+            getSupportActionBar().hide();
+        }
 
         final AuthenticationService authService = AuthenticationService.getInstance(getApplicationContext());
         authService.getCurrentUser(new Result.ResultHandler<LoggedInUser>() {
@@ -36,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onError(Result.Error error) {
                 Log.e(AuthenticationService.class.getName(), error.getError().getMessage());
-                Toast.makeText(MainActivity.this, R.string.cannot_connect, Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, R.string.error_cannot_connect, Toast.LENGTH_LONG).show();
                 finish();
             }
         });

@@ -2,6 +2,8 @@
   <dictionary name="alway">
     <words>
       <w>gson</w>
+      <w>registercommander</w>
+      <w>swipeable</w>
     </words>
   </dictionary>
 </component>
