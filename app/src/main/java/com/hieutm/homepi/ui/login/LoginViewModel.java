@@ -16,7 +16,7 @@ public class LoginViewModel extends ViewModel {
     private final MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
     private final AuthenticationService authService;
 
-    LoginViewModel(AuthenticationService authService) {
+    public LoginViewModel(AuthenticationService authService) {
         this.authService = authService;
     }
 

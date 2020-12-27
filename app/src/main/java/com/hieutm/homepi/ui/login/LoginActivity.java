@@ -12,14 +12,12 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hieutm.homepi.R;
-import com.hieutm.homepi.auth.AuthenticationService;
+import com.hieutm.homepi.ui.AppViewModelFactory;
 import com.hieutm.homepi.ui.home.HomeActivity;
 
 public class LoginActivity extends AppCompatActivity {
@@ -31,8 +29,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        final AuthenticationService authService = AuthenticationService.getInstance(getApplicationContext());
-        final ViewModelProvider modelProvider = new ViewModelProvider(this, new LoginViewModelFactory(authService));
+        final ViewModelProvider.Factory viewModelFactory = AppViewModelFactory.getInstance(getApplicationContext());
+        final ViewModelProvider modelProvider = new ViewModelProvider(this, viewModelFactory);
         loginViewModel = modelProvider.get(LoginViewModel.class);
 
         final EditText usernameEditText = findViewById(R.id.username);
