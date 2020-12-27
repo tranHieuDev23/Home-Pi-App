@@ -1,50 +1,80 @@
 package com.hieutm.homepi.ui.commander;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.hieutm.homepi.R;
 import com.hieutm.homepi.data.model.Commander;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
-public class CommanderListAdapter extends ArrayAdapter<Commander> {
-    public interface ItemClickListener {
-        void onUnregister(Commander commander);
+public class CommanderListAdapter extends RecyclerView.Adapter<CommanderListAdapter.ViewHolder> {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        private final View view;
+        private final TextView deviceTitleView;
+        private final TextView deviceSubtitleView;
+
+        public ViewHolder(View view) {
+            super(view);
+            this.view = view;
+            deviceTitleView = view.findViewById(R.id.device_title_view);
+            deviceSubtitleView = view.findViewById(R.id.device_subtitle_view);
+        }
+
+        public View getView() {
+            return view;
+        }
+
+        public TextView getDeviceTitleView() {
+            return deviceTitleView;
+        }
+
+        public TextView getDeviceSubtitleView() {
+            return deviceSubtitleView;
+        }
     }
 
+    public interface ItemClickListener {
+        void onClick(Commander commander);
+    }
+
+    private List<Commander> objects;
     private final ItemClickListener itemClickListener;
 
-    public CommanderListAdapter(@NonNull Context context, @NonNull List<Commander> objects, ItemClickListener itemClickListener) {
-        super(context, 0, objects);
+    public CommanderListAdapter(@NotNull List<Commander> objects, ItemClickListener itemClickListener) {
+        this.objects = objects;
         this.itemClickListener = itemClickListener;
     }
 
-    public void setCommanders(List<Commander> commanders) {
-        clear();
-        addAll(commanders);
+    public void setCommanders(List<Commander> objects) {
+        this.objects = objects;
         notifyDataSetChanged();
     }
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        Commander commander = getItem(position);
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.device_item, parent, false);
-        }
-        TextView deviceTitleView = convertView.findViewById(R.id.device_title_view);
-        TextView deviceSubtitleView = convertView.findViewById(R.id.device_subtitle_view);
-        deviceTitleView.setText(commander.getDisplayName());
-        deviceSubtitleView.setText(commander.getId());
-        convertView.setOnClickListener(v -> itemClickListener.onUnregister(commander));
-        return convertView;
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.device_item, parent, false);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Commander commander = objects.get(position);
+        holder.getDeviceTitleView().setText(commander.getDisplayName());
+        holder.getDeviceSubtitleView().setText(commander.getId());
+        holder.getView().setOnClickListener(v -> itemClickListener.onClick(commander));
+    }
+
+    @Override
+    public int getItemCount() {
+        return objects.size();
     }
 }

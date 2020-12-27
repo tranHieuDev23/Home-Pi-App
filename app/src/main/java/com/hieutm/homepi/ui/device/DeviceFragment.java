@@ -6,12 +6,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hieutm.homepi.R;
@@ -37,9 +38,11 @@ public class DeviceFragment extends Fragment {
         final ViewModelProvider modelProvider = new ViewModelProvider((ViewModelStoreOwner) activity, viewModelFactory);
         deviceViewModel = modelProvider.get(DeviceViewModel.class);
 
-        ListView deviceListView = root.findViewById(R.id.device_list_view);
-        DeviceListAdapter adapter = new DeviceListAdapter(activity, new ArrayList<>(), this::showBottomSheet);
+        RecyclerView deviceListView = root.findViewById(R.id.device_list_view);
+        DeviceListAdapter adapter = new DeviceListAdapter(new ArrayList<>(), this::showBottomSheet);
         deviceListView.setAdapter(adapter);
+        //noinspection ConstantConditions
+        deviceListView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         deviceViewModel.getDevices().observe(getActivity(), adapter::setDevices);
 
         FloatingActionButton registerCommander = root.findViewById(R.id.register_device_fab);

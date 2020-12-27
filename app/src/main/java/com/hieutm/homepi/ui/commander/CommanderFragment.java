@@ -6,12 +6,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hieutm.homepi.R;
@@ -37,9 +38,11 @@ public class CommanderFragment extends Fragment {
         final ViewModelProvider modelProvider = new ViewModelProvider((ViewModelStoreOwner) activity, viewModelFactory);
         commanderViewModel = modelProvider.get(CommanderViewModel.class);
 
-        ListView commanderListView = root.findViewById(R.id.commander_list_view);
-        CommanderListAdapter adapter = new CommanderListAdapter(activity, new ArrayList<>(), this::showBottomSheet);
+        RecyclerView commanderListView = root.findViewById(R.id.commander_list_view);
+        CommanderListAdapter adapter = new CommanderListAdapter(new ArrayList<>(), this::showBottomSheet);
         commanderListView.setAdapter(adapter);
+        //noinspection ConstantConditions
+        commanderListView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         commanderViewModel.getCommanders().observe(getActivity(), adapter::setCommanders);
 
         FloatingActionButton registerCommander = root.findViewById(R.id.register_commander_fab);
