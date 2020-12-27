@@ -1,4 +1,4 @@
-package com.hieutm.homepi.ui.commander;
+package com.hieutm.homepi.ui.device;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,18 +12,18 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.hieutm.homepi.R;
-import com.hieutm.homepi.data.model.Commander;
+import com.hieutm.homepi.data.model.Device;
 
-public class CommanderBottomSheetFragment extends BottomSheetDialogFragment {
+public class DeviceBottomSheetFragment extends BottomSheetDialogFragment {
     public interface UnregisterListener {
-        void onUnregister(Commander commander);
+        void onUnregister(Device device);
     }
 
-    private final Commander commander;
+    private final Device device;
     private final UnregisterListener unregisterListener;
 
-    public CommanderBottomSheetFragment(Commander commander, UnregisterListener unregisterListener) {
-        this.commander = commander;
+    public DeviceBottomSheetFragment(Device device, UnregisterListener unregisterListener) {
+        this.device = device;
         this.unregisterListener = unregisterListener;
     }
 
@@ -34,10 +34,10 @@ public class CommanderBottomSheetFragment extends BottomSheetDialogFragment {
         TextView bottomSheetTitle = root.findViewById(R.id.device_list_bottom_sheet_title);
         TextView bottomSheetSubtitle = root.findViewById(R.id.device_list_bottom_sheet_subtitle);
         Button bottomSheetUnregisterButton = root.findViewById(R.id.device_list_unregister_button);
-        bottomSheetTitle.setText(commander.getDisplayName());
-        bottomSheetSubtitle.setText(commander.getId());
+        bottomSheetTitle.setText(device.getDisplayName());
+        bottomSheetSubtitle.setText(device.getId());
         bottomSheetUnregisterButton.setOnClickListener(v -> {
-            unregisterListener.onUnregister(commander);
+            unregisterListener.onUnregister(device);
             dismiss();
         });
         return root;

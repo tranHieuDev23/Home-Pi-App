@@ -52,7 +52,7 @@ public class CommanderFragment extends Fragment {
     }
 
     private void showBottomSheet(Commander commander) {
-        CommanderBottomSheetFragment bottomSheet = new CommanderBottomSheetFragment(commander, c -> commanderViewModel.unregisterCommander(commander.getId()));
+        CommanderBottomSheetFragment bottomSheet = new CommanderBottomSheetFragment(commander, c -> commanderViewModel.unregisterCommander(c.getId()));
         bottomSheet.show(getParentFragmentManager(), "Commander Bottom Sheet");
     }
 }

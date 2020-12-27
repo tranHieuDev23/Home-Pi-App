@@ -18,15 +18,15 @@ import com.hieutm.homepi.data.model.DeviceType;
 import java.util.List;
 
 public class DeviceListAdapter extends ArrayAdapter<Device> {
-    public interface UnregisterListener {
-        void onUnregister(Device commander);
+    public interface ItemClickListener {
+        void onUnregister(Device device);
     }
 
-    private final UnregisterListener unregisterListener;
+    private final ItemClickListener itemClickListener;
 
-    public DeviceListAdapter(@NonNull Context context, @NonNull List<Device> objects, UnregisterListener unregisterListener) {
+    public DeviceListAdapter(@NonNull Context context, @NonNull List<Device> objects, ItemClickListener itemClickListener) {
         super(context, 0, objects);
-        this.unregisterListener = unregisterListener;
+        this.itemClickListener = itemClickListener;
     }
 
     public void setDevices(List<Device> devices) {
@@ -48,6 +48,7 @@ public class DeviceListAdapter extends ArrayAdapter<Device> {
         deviceImageView.setImageResource(getDeviceImageResourceId(device.getType()));
         deviceTitleView.setText(device.getDisplayName());
         deviceSubtitleView.setText(device.getId());
+        convertView.setOnClickListener(v -> itemClickListener.onUnregister(device));
         return convertView;
     }
 
