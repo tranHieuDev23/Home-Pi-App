@@ -34,7 +34,6 @@ public class DeviceViewModel extends ViewModel {
 
             @Override
             public void onError(Result.Error error) {
-                Log.e(DeviceViewModel.class.getName(), error.getError().getMessage());
                 errors.setValue(R.string.error_cannot_connect);
             }
         });
@@ -52,7 +51,7 @@ public class DeviceViewModel extends ViewModel {
         homeControlService.registerDevice(deviceId, new Result.ResultHandler<Device>() {
             @Override
             public void onSuccess(Result.Success<Device> result) {
-                @SuppressWarnings("ConstantConditions") List<Device> newList = new ArrayList<>(devices.getValue());
+                List<Device> newList = new ArrayList<>(devices.getValue());
                 newList.add(result.getData());
                 devices.setValue(newList);
             }
@@ -66,7 +65,7 @@ public class DeviceViewModel extends ViewModel {
     }
 
     public void unregisterDevice(@NotNull String deviceId) {
-        @SuppressWarnings("ConstantConditions") List<Device> newList = new ArrayList<>(devices.getValue());
+        List<Device> newList = new ArrayList<>(devices.getValue());
         newList.removeIf(item -> item.getId().equals(deviceId));
         devices.setValue(newList);
     }

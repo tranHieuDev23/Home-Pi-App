@@ -57,10 +57,7 @@ public class AuthenticationService {
             } catch (JSONException e) {
                 // Ignored because exceptions cannot happen
             }
-        }, error -> {
-            Log.e(AuthenticationService.class.getName(), error.getMessage());
-            handler.onError(new Result.Error(new Exception("Cannot validate current user")));
-        });
+        }, error -> handler.onError(new Result.Error(new Exception("Cannot validate current user"))));
         requestQueue.add(request);
     }
 
@@ -97,9 +94,7 @@ public class AuthenticationService {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ApiUrls.AUTH_LOGOUT_URL, null, response -> {
             currentUser = null;
             handler.onSuccess(new Result.Success<>(null));
-        }, error -> {
-            handler.onError(new Result.Error(error));
-        });
+        }, error -> handler.onError(new Result.Error(error)));
         requestQueue.add(request);
     }
 }

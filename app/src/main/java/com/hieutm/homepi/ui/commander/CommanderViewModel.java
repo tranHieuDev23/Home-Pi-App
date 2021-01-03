@@ -34,7 +34,6 @@ public class CommanderViewModel extends ViewModel {
 
             @Override
             public void onError(Result.Error error) {
-                Log.e(CommanderViewModel.class.getName(), error.getError().getMessage());
                 errors.setValue(R.string.error_cannot_connect);
             }
         });
@@ -52,7 +51,7 @@ public class CommanderViewModel extends ViewModel {
         homeControlService.registerCommander(commanderId, new Result.ResultHandler<Commander>() {
             @Override
             public void onSuccess(Result.Success<Commander> result) {
-                @SuppressWarnings("ConstantConditions") List<Commander> newList = new ArrayList<>(commanders.getValue());
+                List<Commander> newList = new ArrayList<>(commanders.getValue());
                 newList.add(result.getData());
                 commanders.setValue(newList);
             }
@@ -66,7 +65,7 @@ public class CommanderViewModel extends ViewModel {
     }
 
     public void unregisterCommander(@NotNull String commanderId) {
-        @SuppressWarnings("ConstantConditions") List<Commander> newList = new ArrayList<>(commanders.getValue());
+        List<Commander> newList = new ArrayList<>(commanders.getValue());
         newList.removeIf(item -> item.getId().equals(commanderId));
         commanders.setValue(newList);
     }

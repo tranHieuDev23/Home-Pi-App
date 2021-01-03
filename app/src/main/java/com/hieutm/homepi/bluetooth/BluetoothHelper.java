@@ -9,14 +9,21 @@ import android.content.Intent;
 import com.harrysoft.androidbluetoothserial.BluetoothManager;
 import com.harrysoft.androidbluetoothserial.BluetoothSerialDevice;
 import com.harrysoft.androidbluetoothserial.SimpleBluetoothDeviceInterface;
+import com.hieutm.homepi.data.Result;
 
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class BluetoothHelper {
-    private BluetoothHelper() {}
+    private BluetoothHelper() {
+    }
 
     private static final BluetoothHelper INSTANCE = new BluetoothHelper();
 
@@ -26,8 +33,19 @@ public class BluetoothHelper {
 
     private static final BluetoothManager BLUETOOTH_MANAGER = BluetoothManager.getInstance();
 
+    public boolean isBluetoothEnabled() {
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        if (adapter == null) {
+            return false;
+        }
+        return adapter.isEnabled();
+    }
+
     public boolean ensureBluetoothEnabled(Activity context) {
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        if (adapter == null) {
+            return false;
+        }
         if (!adapter.isEnabled()) {
             Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             context.startActivityForResult(intent, 0);
@@ -36,14 +54,7 @@ public class BluetoothHelper {
     }
 
     public List<BluetoothDevice> getPairedDevices() {
-        return BLUETOOTH_MANAGER.getPairedDevicesList();
-    }
-
-    public interface BluetoothConnectionHandler {
-        void onConnected(BluetoothSerialDevice connectedDevice);
-        void onMessageSent(String message);
-        void onMessageReceived(String message);
-        void onError(Throwable error);
+        return new ArrayList<>(BLUETOOTH_MANAGER.getPairedDevicesList());
     }
 
     @SuppressLint("CheckResult")
@@ -55,10 +66,28 @@ public class BluetoothHelper {
                     handler.onConnected(connectedDevice);
                     SimpleBluetoothDeviceInterface deviceInterface = connectedDevice.toSimpleDeviceInterface();
                     deviceInterface.setListeners(handler::onMessageReceived, handler::onMessageSent, handler::onError);
-                }, handler::onError);
+                }, handler::onConnectionError);
     }
 
     public void disconnectDevice(String mac) {
         BLUETOOTH_MANAGER.closeDevice(mac);
+    }
+
+    public void sendJsonMessage(String mac, JSONObject message, int retry, Result.ResultHandler<JSONObject> responseHandler) {
+        BluetoothJsonConnectionHandler handler = new BluetoothJsonConnectionHandler(
+                message, retry, new Result.ResultHandler<JSONObject>() {
+            @Override
+            public void onSuccess(Result.Success<JSONObject> result) {
+                responseHandler.onSuccess(result);
+                disconnectDevice(mac);
+            }
+
+            @Override
+            public void onError(Result.Error error) {
+                responseHandler.onError(error);
+                disconnectDevice(mac);
+            }
+        });
+        connectDevice(mac, handler);
     }
 }

@@ -24,8 +24,8 @@ public class CommanderListAdapter extends RecyclerView.Adapter<CommanderListAdap
         public ViewHolder(View view) {
             super(view);
             this.view = view;
-            deviceTitleView = view.findViewById(R.id.device_title_view);
-            deviceSubtitleView = view.findViewById(R.id.device_subtitle_view);
+            deviceTitleView = view.findViewById(R.id.device_list_item_title);
+            deviceSubtitleView = view.findViewById(R.id.device_list_item_subtitle);
         }
 
         public View getView() {

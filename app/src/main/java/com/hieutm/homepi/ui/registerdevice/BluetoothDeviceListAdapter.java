@@ -1,28 +1,30 @@
-package com.hieutm.homepi.ui.device;
+package com.hieutm.homepi.ui.registerdevice;
 
+import android.bluetooth.BluetoothDevice;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hieutm.homepi.R;
-import com.hieutm.homepi.data.model.Device;
-import com.hieutm.homepi.data.model.DeviceType;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.ViewHolder> {
+public class BluetoothDeviceListAdapter extends RecyclerView.Adapter<BluetoothDeviceListAdapter.ViewHolder> {
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private  final View view;
+        private final View view;
         private final ImageView deviceImageView;
         private final TextView deviceTitleView;
         private final TextView deviceSubtitleView;
+        private final ProgressBar progressBar;
 
         public ViewHolder(@NonNull View view) {
             super(view);
@@ -30,71 +32,68 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.Vi
             deviceImageView = view.findViewById(R.id.device_list_item_image);
             deviceTitleView = view.findViewById(R.id.device_list_item_title);
             deviceSubtitleView = view.findViewById(R.id.device_list_item_subtitle);
+            progressBar = view.findViewById(R.id.device_list_item_progressbar);
         }
 
         public View getView() {
             return view;
         }
-
         public ImageView getDeviceImageView() {
             return deviceImageView;
         }
-
         public TextView getDeviceTitleView() {
             return deviceTitleView;
         }
-
         public TextView getDeviceSubtitleView() {
             return deviceSubtitleView;
+        }
+        public ProgressBar getProgressBar() {
+            return progressBar;
         }
     }
 
     public interface ItemClickListener {
-        void onClick(Device device);
+        void onClick(int position, BluetoothDevice device);
     }
 
-    private List<Device> objects;
+    private List<BluetoothDeviceListItem> objects;
     private final ItemClickListener itemClickListener;
 
-    public DeviceListAdapter(@NonNull List<Device> objects, @NotNull ItemClickListener itemClickListener) {
+    public BluetoothDeviceListAdapter(@NonNull List<BluetoothDeviceListItem> objects, @NotNull ItemClickListener itemClickListener) {
         this.objects = objects;
         this.itemClickListener = itemClickListener;
     }
 
-    public void setDevices(List<Device> objects) {
+    public void setDevices(List<BluetoothDeviceListItem> objects) {
         this.objects = objects;
+        notifyDataSetChanged();
+    }
+
+    public void setIsLoading(int position, boolean isLoading) {
+        this.objects.get(position).setLoading(isLoading);
         notifyDataSetChanged();
     }
 
     @NonNull
     @Override
-    public DeviceListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.device_item, parent, false);
-        return new DeviceListAdapter.ViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DeviceListAdapter.ViewHolder holder, int position) {
-        Device device = objects.get(position);
-        holder.getDeviceImageView().setImageResource(getDeviceImageResourceId(device.getType()));
-        holder.getDeviceTitleView().setText(device.getDisplayName());
-        holder.getDeviceSubtitleView().setText(device.getId());
-        holder.getView().setOnClickListener(v -> itemClickListener.onClick(device));
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        BluetoothDeviceListItem item = objects.get(position);
+        BluetoothDevice device = item.getDevice();
+        holder.getDeviceImageView().setImageResource(R.drawable.ic_smart_light);
+        holder.getDeviceTitleView().setText(device.getName());
+        holder.getDeviceSubtitleView().setText(device.getAddress());
+        holder.getProgressBar().setVisibility(item.isLoading()? View.VISIBLE : View.INVISIBLE);
+        holder.getView().setOnClickListener(v -> itemClickListener.onClick(position, device));
     }
 
     @Override
     public int getItemCount() {
         return objects.size();
-    }
-
-    private int getDeviceImageResourceId(DeviceType type) {
-        switch (type) {
-            case LIGHT:
-                return R.drawable.ic_smart_light;
-            case THERMOSTAT:
-                return R.drawable.ic_thermostat;
-            default:
-                return R.drawable.ic_launcher_foreground;
-        }
     }
 }

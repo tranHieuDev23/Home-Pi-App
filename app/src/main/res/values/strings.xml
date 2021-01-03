@@ -27,4 +27,9 @@
     <string name="register_device_activity_register_device">Register device</string>
     <string name="register_device_activity_find_device">Find device</string>
     <string name="register_device_activity_connect_wifi">Connect WiFi</string>
+    <string name="register_device_activity_guide">Make sure that your device\'s Bluetooth is enabled and is discoverable</string>
+    <string name="register_device_activity_please_enable_bluetooth">Please enable Bluetooth to continue</string>
+    <string name="register_device_activity_permission_rationale">Bluetooth and Location services are needed to discover Bluetooth devices</string>
+    <string name="register_device_activity_enable_bluetooth_button">Enable bluetooth</string>
+    <string name="register_device_refresh">Refresh</string>
 </resources>
