@@ -4,7 +4,6 @@ import android.Manifest;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -59,7 +58,17 @@ public class RegisterDeviceActivity extends AppCompatActivity {
 
         RecyclerView deviceListView = findViewById(R.id.register_device_activity_list_view);
         BluetoothDeviceListAdapter adapter = new BluetoothDeviceListAdapter(new ArrayList<>(), (position, device) -> {
+            viewModel.registerDevice(position, new Result.ResultHandler<Device>() {
+                @Override
+                public void onSuccess(Result.Success<Device> result) {
 
+                }
+
+                @Override
+                public void onError(Result.Error error) {
+
+                }
+            });
         });
         deviceListView.setAdapter(adapter);
         deviceListView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
