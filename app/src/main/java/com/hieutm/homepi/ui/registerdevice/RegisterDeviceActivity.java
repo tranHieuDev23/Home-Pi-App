@@ -1,11 +1,19 @@
 package com.hieutm.homepi.ui.registerdevice;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -29,20 +37,33 @@ public class RegisterDeviceActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
     private static final int PERMISSION_REQUEST_ID = 1;
+    private static final int BLUETOOTH_REQUEST_ID = 2;
 
     private RegisterDeviceViewModel viewModel;
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                viewModel.addDiscoveredDevice(device);
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_device);
 
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(receiver, filter);
+
         final ViewModelProvider.Factory viewModelFactory = AppViewModelFactory.getInstance(getApplicationContext());
         final ViewModelProvider modelProvider = new ViewModelProvider(this, viewModelFactory);
         viewModel = modelProvider.get(RegisterDeviceViewModel.class);
 
         final Button enableBluetoothButton = findViewById(R.id.register_device_activity_enable_bluetooth_button);
-        enableBluetoothButton.setOnClickListener(v -> viewModel.requestBluetooth(this));
+        enableBluetoothButton.setOnClickListener(v -> this.requestBluetooth());
 
         final View enableBluetoothLayout = findViewById(R.id.register_device_activity_enable_bluetooth_layout);
         final View registerLayout = findViewById(R.id.register_device_activity_register_layout);
@@ -61,12 +82,12 @@ public class RegisterDeviceActivity extends AppCompatActivity {
             viewModel.registerDevice(position, new Result.ResultHandler<Device>() {
                 @Override
                 public void onSuccess(Result.Success<Device> result) {
-
+                    Toast.makeText(getBaseContext(), result.getData().getId(), Toast.LENGTH_LONG).show();
                 }
 
                 @Override
                 public void onError(Result.Error error) {
-
+                    Toast.makeText(getBaseContext(), error.getError().getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
         });
@@ -74,13 +95,32 @@ public class RegisterDeviceActivity extends AppCompatActivity {
         deviceListView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         viewModel.getDevices().observe(this, adapter::setDevices);
 
-        startDiscovering();
+        viewModel.refreshBluetoothStatus();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == BLUETOOTH_REQUEST_ID) {
+            viewModel.refreshBluetoothStatus();
+        }
+    }
+
+    private void requestBluetooth() {
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        startActivityForResult(enableBtIntent, BLUETOOTH_REQUEST_ID);
     }
 
     @AfterPermissionGranted(PERMISSION_REQUEST_ID)
@@ -93,6 +133,6 @@ public class RegisterDeviceActivity extends AppCompatActivity {
                     REQUIRED_PERMISSIONS);
             return;
         }
-        this.viewModel.discoverDevices();
+        this.viewModel.startDiscovering();
     }
 }
