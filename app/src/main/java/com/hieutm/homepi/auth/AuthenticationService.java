@@ -65,7 +65,6 @@ public class AuthenticationService {
                     }
                 }, observer::onError);
                 requestQueue.add(request);
-
             }
         };
     }
@@ -113,7 +112,6 @@ public class AuthenticationService {
                     s.onComplete();
                 }, s::onError);
                 requestQueue.add(request);
-
             }
         };
     }
