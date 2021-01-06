@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hieutm.homepi.R;
-import com.hieutm.homepi.data.model.Commander;
+import com.hieutm.homepi.models.Commander;
 import com.hieutm.homepi.ui.AppViewModelFactory;
 import com.hieutm.homepi.ui.registercommander.RegisterCommanderActivity;
 

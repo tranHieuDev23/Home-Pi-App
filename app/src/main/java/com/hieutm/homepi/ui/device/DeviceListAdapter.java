@@ -10,8 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hieutm.homepi.R;
-import com.hieutm.homepi.data.model.Device;
-import com.hieutm.homepi.data.model.DeviceType;
+import com.hieutm.homepi.models.Device;
+import com.hieutm.homepi.models.DeviceType;
 
 import org.jetbrains.annotations.NotNull;
 

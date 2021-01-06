@@ -1,4 +1,4 @@
-package com.hieutm.homepi.data.model;
+package com.hieutm.homepi.models;
 
 public class Commander {
     private String id;

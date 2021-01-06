@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.hieutm.homepi.R;
-import com.hieutm.homepi.data.model.Commander;
+import com.hieutm.homepi.models.Commander;
 import com.hieutm.homepi.homecontrol.HomeControlService;
 
 import org.jetbrains.annotations.NotNull;

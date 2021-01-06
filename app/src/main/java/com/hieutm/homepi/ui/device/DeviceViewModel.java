@@ -8,9 +8,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.hieutm.homepi.R;
-import com.hieutm.homepi.data.model.Device;
+import com.hieutm.homepi.models.Device;
 import com.hieutm.homepi.homecontrol.HomeControlService;
-import com.hieutm.homepi.ui.commander.CommanderViewModel;
 
 import org.jetbrains.annotations.NotNull;
 

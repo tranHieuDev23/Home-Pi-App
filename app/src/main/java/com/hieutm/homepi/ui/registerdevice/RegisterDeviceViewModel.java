@@ -8,8 +8,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.hieutm.homepi.bluetooth.BluetoothHelper;
-import com.hieutm.homepi.data.model.Device;
-import com.hieutm.homepi.data.model.DeviceType;
+import com.hieutm.homepi.models.Device;
+import com.hieutm.homepi.models.DeviceType;
 
 import java.util.List;
 import java.util.stream.Collectors;

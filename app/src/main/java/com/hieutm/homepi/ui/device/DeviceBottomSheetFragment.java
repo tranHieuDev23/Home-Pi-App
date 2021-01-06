@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.hieutm.homepi.R;
-import com.hieutm.homepi.data.model.Device;
+import com.hieutm.homepi.models.Device;
 
 public class DeviceBottomSheetFragment extends BottomSheetDialogFragment {
     public interface UnregisterListener {

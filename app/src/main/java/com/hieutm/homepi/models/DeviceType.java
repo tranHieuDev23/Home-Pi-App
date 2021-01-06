@@ -1,4 +1,4 @@
-package com.hieutm.homepi.data.model;
+package com.hieutm.homepi.models;
 
 import java.util.HashMap;
 import java.util.Map;

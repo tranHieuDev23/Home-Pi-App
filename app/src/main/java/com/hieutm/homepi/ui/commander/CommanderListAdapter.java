@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hieutm.homepi.R;
-import com.hieutm.homepi.data.model.Commander;
+import com.hieutm.homepi.models.Commander;
 
 import org.jetbrains.annotations.NotNull;
 

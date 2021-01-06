@@ -1,4 +1,6 @@
-package com.hieutm.homepi.data.model;
+package com.hieutm.homepi.models;
+
+import com.hieutm.homepi.models.DeviceType;
 
 public class Device {
     private String id;

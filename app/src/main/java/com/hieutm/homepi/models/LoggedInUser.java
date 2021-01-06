@@ -1,4 +1,4 @@
-package com.hieutm.homepi.data.model;
+package com.hieutm.homepi.models;
 
 /**
  * Data class that captures user information for logged in users
