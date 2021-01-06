@@ -1,6 +1,7 @@
 package com.hieutm.homepi.ui.registerdevice;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -20,8 +21,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hieutm.homepi.R;
-import com.hieutm.homepi.data.Result;
-import com.hieutm.homepi.data.model.Device;
 import com.hieutm.homepi.ui.AppViewModelFactory;
 
 import java.util.ArrayList;
@@ -78,16 +77,12 @@ public class RegisterDeviceActivity extends AppCompatActivity {
         });
 
         RecyclerView deviceListView = findViewById(R.id.register_device_activity_list_view);
-        BluetoothDeviceListAdapter adapter = new BluetoothDeviceListAdapter(new ArrayList<>(), (position, device) -> {
-            viewModel.registerDevice(position, new Result.ResultHandler<Device>() {
-                @Override
-                public void onSuccess(Result.Success<Device> result) {
-                    Toast.makeText(getBaseContext(), result.getData().getId(), Toast.LENGTH_LONG).show();
-                }
-
-                @Override
-                public void onError(Result.Error error) {
-                    Toast.makeText(getBaseContext(), error.getError().getMessage(), Toast.LENGTH_LONG).show();
+        @SuppressLint("CheckResult") BluetoothDeviceListAdapter adapter = new BluetoothDeviceListAdapter(new ArrayList<>(), (position, bluetoothDevice) -> {
+            viewModel.registerDevice(position).subscribe((device, throwable) -> {
+                if (throwable != null) {
+                    Toast.makeText(getBaseContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getBaseContext(), device.getId(), Toast.LENGTH_LONG).show();
                 }
             });
         });

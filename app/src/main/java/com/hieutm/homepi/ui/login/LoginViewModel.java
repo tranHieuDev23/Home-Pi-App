@@ -1,5 +1,6 @@
 package com.hieutm.homepi.ui.login;
 
+import android.annotation.SuppressLint;
 import android.util.Patterns;
 
 import androidx.lifecycle.LiveData;
@@ -8,8 +9,6 @@ import androidx.lifecycle.ViewModel;
 
 import com.hieutm.homepi.R;
 import com.hieutm.homepi.auth.AuthenticationService;
-import com.hieutm.homepi.data.Result;
-import com.hieutm.homepi.data.model.LoggedInUser;
 
 public class LoginViewModel extends ViewModel {
     private final MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
@@ -28,18 +27,9 @@ public class LoginViewModel extends ViewModel {
         return loginResult;
     }
 
+    @SuppressLint("CheckResult")
     public void login(String username, String password) {
-        authService.logIn(username, password, new Result.ResultHandler<LoggedInUser>() {
-            @Override
-            public void onSuccess(Result.Success<LoggedInUser> result) {
-                loginResult.setValue(new LoginResult(new LoggedInUserView(result.getData().getDisplayName())));
-            }
-
-            @Override
-            public void onError(Result.Error error) {
-                loginResult.setValue(new LoginResult(R.string.login_activity_login_failed));
-            }
-        });
+        authService.logIn(username, password).subscribe(loggedInUser -> loginResult.setValue(new LoginResult(new LoggedInUserView(loggedInUser.getDisplayName()))), throwable -> loginResult.setValue(new LoginResult(R.string.login_activity_login_failed)));
     }
 
     public void loginDataChanged(String username, String password) {

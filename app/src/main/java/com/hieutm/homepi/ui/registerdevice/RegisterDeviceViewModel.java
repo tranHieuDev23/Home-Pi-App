@@ -8,13 +8,16 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.hieutm.homepi.bluetooth.BluetoothHelper;
-import com.hieutm.homepi.data.Result;
 import com.hieutm.homepi.data.model.Device;
+import com.hieutm.homepi.data.model.DeviceType;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.schedulers.Schedulers;
 
 public class RegisterDeviceViewModel extends ViewModel {
@@ -75,35 +78,36 @@ public class RegisterDeviceViewModel extends ViewModel {
     }
 
     @SuppressLint("CheckResult")
-    public void registerDevice(int position, Result.ResultHandler<Device> registerHandler) {
-        setDeviceListItemRegistering(position, true);
-        @SuppressWarnings("ConstantConditions") BluetoothDeviceListItem device = devices.getValue().get(position);
-        String mac = device.getDevice().getAddress();
-        BLUETOOTH_HELPER.connect(mac)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((bluetoothCommunicationHandler, throwable) -> {
-            if (throwable != null) {
-                setDeviceListItemRegistering(position, false);
-                registerHandler.onError(new Result.Error(new RuntimeException(throwable)));
-                return;
-            }
-            bluetoothCommunicationHandler.sendMessage("{\"action\": \"getId\"}")
-                    .subscribe((response, error) -> {
-                        if (error != null) {
-                            setDeviceListItemRegistering(position, false);
-                            registerHandler.onError(new Result.Error(new RuntimeException(error)));
-                            return;
-                        }
-                        setDeviceListItemRegistering(position, false);
-                        registerHandler.onSuccess(
-                                new Result.Success<>(
-                                        new Device(response, "Home Pi Light", null)
-                                )
-                        );
-                    });
+    public Single<Device> registerDevice(int position) {
+        return new Single<Device>() {
+            @Override
+            protected void subscribeActual(@NonNull SingleObserver<? super Device> observer) {
+                setDeviceListItemRegistering(position, true);
+                @SuppressWarnings("ConstantConditions") BluetoothDeviceListItem device = devices.getValue().get(position);
+                String mac = device.getDevice().getAddress();
+                BLUETOOTH_HELPER.connect(mac)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe((bluetoothCommunicationHandler, bluetoothConnectionError) -> {
+                            if (bluetoothConnectionError != null) {
+                                setDeviceListItemRegistering(position, false);
+                                observer.onError(bluetoothConnectionError);
+                                return;
+                            }
+                            bluetoothCommunicationHandler.sendMessage("{\"action\": \"getId\"}")
+                                    .subscribe((response, bluetoothCommunicationError) -> {
+                                        if (bluetoothCommunicationError != null) {
+                                            setDeviceListItemRegistering(position, false);
+                                            observer.onError(bluetoothCommunicationError);
+                                            return;
+                                        }
+                                        setDeviceListItemRegistering(position, false);
+                                        observer.onSuccess(new Device(response, "Home Pi Light", DeviceType.LIGHT));
+                                    });
 
-        });
+                        });
+            }
+        };
     }
 
     private void setDeviceListItemRegistering(int position, boolean isLoading) {
