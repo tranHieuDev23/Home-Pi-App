@@ -69,11 +69,6 @@ public class BluetoothDeviceListAdapter extends RecyclerView.Adapter<BluetoothDe
         notifyDataSetChanged();
     }
 
-    public void setIsLoading(int position, boolean isLoading) {
-        this.objects.get(position).setLoading(isLoading);
-        notifyDataSetChanged();
-    }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -85,7 +80,7 @@ public class BluetoothDeviceListAdapter extends RecyclerView.Adapter<BluetoothDe
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         BluetoothDeviceListItem item = objects.get(position);
         BluetoothDevice device = item.getDevice();
-        holder.getDeviceImageView().setImageResource(R.drawable.ic_smart_light);
+        holder.getDeviceImageView().setImageResource(R.drawable.ic_bluetooth);
         holder.getDeviceTitleView().setText(device.getName());
         holder.getDeviceSubtitleView().setText(device.getAddress());
         holder.getProgressBar().setVisibility(item.isLoading()? View.VISIBLE : View.INVISIBLE);

@@ -3,6 +3,7 @@ package com.hieutm.homepi.ui.commander;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,18 +19,24 @@ import java.util.List;
 public class CommanderListAdapter extends RecyclerView.Adapter<CommanderListAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final View view;
+        private final ImageView imageView;
         private final TextView deviceTitleView;
         private final TextView deviceSubtitleView;
 
         public ViewHolder(View view) {
             super(view);
             this.view = view;
+            imageView = view.findViewById(R.id.device_list_item_image);
             deviceTitleView = view.findViewById(R.id.device_list_item_title);
             deviceSubtitleView = view.findViewById(R.id.device_list_item_subtitle);
         }
 
         public View getView() {
             return view;
+        }
+
+        public ImageView getImageView() {
+            return imageView;
         }
 
         public TextView getDeviceTitleView() {
@@ -68,6 +75,7 @@ public class CommanderListAdapter extends RecyclerView.Adapter<CommanderListAdap
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Commander commander = objects.get(position);
+        holder.getImageView().setImageResource(R.drawable.ic_launcher_foreground);
         holder.getDeviceTitleView().setText(commander.getDisplayName());
         holder.getDeviceSubtitleView().setText(commander.getId());
         holder.getView().setOnClickListener(v -> itemClickListener.onClick(commander));
