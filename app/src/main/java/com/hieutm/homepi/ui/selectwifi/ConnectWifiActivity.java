@@ -3,10 +3,14 @@ package com.hieutm.homepi.ui.selectwifi;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,6 +43,9 @@ public class ConnectWifiActivity extends AppCompatActivity {
         }
         viewModel.setMac(mac);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         RecyclerView listView = findViewById(R.id.select_wifi_list_view);
         WifiListAdapter adapter = new WifiListAdapter(new ArrayList<>(), viewModel::selectWifiNetWork);
         listView.setAdapter(adapter);
@@ -66,6 +73,21 @@ public class ConnectWifiActivity extends AppCompatActivity {
         });
 
         scanWifi();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.connect_wifi_app_bar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.connect_wifi_refresh_option) {
+            scanWifi();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void scanWifi() {

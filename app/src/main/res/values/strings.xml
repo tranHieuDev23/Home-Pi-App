@@ -42,4 +42,5 @@
     <string name="wifi_list_item_title">WiFi SSID</string>
     <string name="connect_wifi_failure">Cannot connect to WiFi network</string>
     <string name="register_device_activity_wifi_not_connected">Device is not connected to WiFi, cannot register</string>
+    <string name="connect_wifi_refresh">Refresh</string>
 </resources>
