@@ -1,11 +1,16 @@
 package com.hieutm.homepi.ui.selectwifi;
 
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -27,9 +32,22 @@ public class ConnectWifiActivity extends AppCompatActivity {
     public static final String INPUT_EXTRA_MAC_KEY = "INPUT_EXTRA_MAC_KEY";
     public static final String OUTPUT_SUCCESS_KEY = "OUTPUT_SUCCESS_KEY";
     public static final String OUTPUT_MAC_KEY = "OUTPUT_MAC_KEY";
+    private static final int BLUETOOTH_REQUEST_ID = 1;
 
     private ConnectWifiViewModel viewModel;
     private String mac;
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+                int currentState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.STATE_OFF);
+                if (currentState == BluetoothAdapter.STATE_ON || currentState == BluetoothAdapter.STATE_OFF) {
+                    viewModel.refreshBluetoothStatus();
+                }
+            }
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +60,9 @@ public class ConnectWifiActivity extends AppCompatActivity {
             throw new RuntimeException("No target device's MAC address was included in the intent");
         }
         viewModel.setMac(mac);
+
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(receiver, filter);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -59,17 +80,20 @@ public class ConnectWifiActivity extends AppCompatActivity {
             invalidateOptionsMenu();
         });
 
+        final Button enableBluetoothButton = findViewById(R.id.connect_wifi_activity_enable_bluetooth_button);
+        enableBluetoothButton.setOnClickListener(v -> this.requestBluetooth());
+
         RecyclerView listView = findViewById(R.id.connect_wifi_activity_list_view);
         WifiListAdapter adapter = new WifiListAdapter(new ArrayList<>(), viewModel::selectWifiNetWork);
         listView.setAdapter(adapter);
         viewModel.getWifiNetworks().observe(this, adapter::setObjects);
 
         ProgressBar progressBar = findViewById(R.id.connect_wifi_activity_progress_bar);
-        viewModel.getIsLoading().observe(this, isLoading -> progressBar.setVisibility(isLoading? View.VISIBLE : View.GONE));
+        viewModel.getIsLoading().observe(this, isLoading -> progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE));
 
         viewModel.getSelectedWifiNetwork().observe(this, wifiNetwork -> {
             if (wifiNetwork == null) {
-                return ;
+                return;
             }
             if (wifiNetwork.isOpen()) {
                 connectWifi(wifiNetwork, null);
@@ -86,6 +110,12 @@ public class ConnectWifiActivity extends AppCompatActivity {
         });
 
         scanWifi();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
     }
 
     @Override
@@ -112,6 +142,11 @@ public class ConnectWifiActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void requestBluetooth() {
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        startActivityForResult(enableBtIntent, BLUETOOTH_REQUEST_ID);
     }
 
     private void scanWifi() {

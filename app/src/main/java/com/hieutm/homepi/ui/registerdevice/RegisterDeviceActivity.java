@@ -51,9 +51,17 @@ public class RegisterDeviceActivity extends AppCompatActivity {
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                viewModel.addDiscoveredDevice(device);
+            switch (action) {
+                case BluetoothDevice.ACTION_FOUND:
+                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    viewModel.addDiscoveredDevice(device);
+                    break;
+                case BluetoothAdapter.ACTION_STATE_CHANGED:
+                    int currentState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.STATE_OFF);
+                    if (currentState == BluetoothAdapter.STATE_ON || currentState == BluetoothAdapter.STATE_OFF) {
+                        viewModel.refreshBluetoothStatus();
+                    }
+                    break;
             }
         }
     };
@@ -64,6 +72,7 @@ public class RegisterDeviceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register_device);
 
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(receiver, filter);
 
         final ViewModelProvider.Factory viewModelFactory = AppViewModelFactory.getInstance(getApplicationContext());
@@ -145,17 +154,11 @@ public class RegisterDeviceActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case BLUETOOTH_REQUEST_ID:
-                    viewModel.refreshBluetoothStatus();
-                    break;
-                case WIFI_REQUEST_ID:
-                    boolean success = data.getBooleanExtra(ConnectWifiActivity.OUTPUT_SUCCESS_KEY, false);
-                    if (!success) {
-                        Toast.makeText(this, R.string.register_device_activity_wifi_not_connected, Toast.LENGTH_LONG).show();
-                    }
-                     registerDevice(data.getStringExtra(ConnectWifiActivity.OUTPUT_MAC_KEY));
-                    break;
+            if (requestCode == WIFI_REQUEST_ID) {
+                boolean success = data.getBooleanExtra(ConnectWifiActivity.OUTPUT_SUCCESS_KEY, false);
+                if (success) {
+                    registerDevice(data.getStringExtra(ConnectWifiActivity.OUTPUT_MAC_KEY));
+                }
             }
         }
     }
@@ -177,9 +180,10 @@ public class RegisterDeviceActivity extends AppCompatActivity {
                             requestDeviceConnectWifi(mac);
                             return;
                         }
-                        Toast.makeText(getBaseContext(), R.string.register_device_an_error_happened, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getBaseContext(), R.string.register_device_an_error_happened, Toast.LENGTH_SHORT).show();
                         return;
                     }
+                    Toast.makeText(getBaseContext(), R.string.register_device_register_success, Toast.LENGTH_SHORT).show();
                     finish();
                 });
     }

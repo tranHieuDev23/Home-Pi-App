@@ -53,6 +53,10 @@ public class ConnectWifiViewModel extends ViewModel {
         this.mac = mac;
     }
 
+    public void refreshBluetoothStatus() {
+        isBluetoothEnabled.setValue(BLUETOOTH_HELPER.isBluetoothEnabled());
+    }
+
     @SuppressLint("CheckResult")
     public Completable scanWifi() {
         if (mac == null) {
