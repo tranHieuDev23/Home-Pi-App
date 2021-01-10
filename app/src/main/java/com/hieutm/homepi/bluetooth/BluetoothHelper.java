@@ -37,16 +37,6 @@ public class BluetoothHelper {
         }
     }
 
-    public List<BluetoothDevice> getPairedDevices() {
-        BluetoothAdapter adapter;
-        try {
-            adapter = getBluetoothAdapter();
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-        return new ArrayList<>(adapter.getBondedDevices());
-    }
-
     public void startDiscovering() {
         getBluetoothAdapter().startDiscovery();
     }

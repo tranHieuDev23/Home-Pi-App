@@ -61,13 +61,11 @@ public class RegisterDeviceViewModel extends ViewModel {
 
     public void refreshBluetoothStatus() {
         isBluetoothEnabled.setValue(BLUETOOTH_HELPER.isBluetoothEnabled());
-        devices.setValue(BLUETOOTH_HELPER.getPairedDevices());
     }
 
     public void startDiscovering() {
         mac2DeviceMap.clear();
-        BLUETOOTH_HELPER.getPairedDevices().forEach(item -> mac2DeviceMap.put(item.getAddress(), item));
-        devices.postValue(new ArrayList<>(mac2DeviceMap.values()));
+        devices.postValue(new ArrayList<>());
         isLoading.postValue(true);
         isDiscovering.postValue(true);
         BLUETOOTH_HELPER.startDiscovering();
