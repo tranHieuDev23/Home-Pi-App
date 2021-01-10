@@ -46,6 +46,19 @@ public class ConnectWifiActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        final View enableBluetoothLayout = findViewById(R.id.connect_wifi_activity_enable_bluetooth_layout);
+        final View connectLayout = findViewById(R.id.connect_wifi_activity_activity_connect_layout);
+        viewModel.getIsBluetoothEnabled().observe(this, bluetoothEnabled -> {
+            if (bluetoothEnabled) {
+                enableBluetoothLayout.setVisibility(View.INVISIBLE);
+                connectLayout.setVisibility(View.VISIBLE);
+            } else {
+                enableBluetoothLayout.setVisibility(View.VISIBLE);
+                connectLayout.setVisibility(View.INVISIBLE);
+            }
+            invalidateOptionsMenu();
+        });
+
         RecyclerView listView = findViewById(R.id.connect_wifi_activity_list_view);
         WifiListAdapter adapter = new WifiListAdapter(new ArrayList<>(), viewModel::selectWifiNetWork);
         listView.setAdapter(adapter);
@@ -79,6 +92,13 @@ public class ConnectWifiActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.connect_wifi_app_bar_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        boolean isBluetoothEnabled = viewModel.getIsBluetoothEnabled().getValue();
+        menu.getItem(0).setVisible(isBluetoothEnabled);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
