@@ -13,7 +13,10 @@ import com.hieutm.homepi.homecontrol.DeviceCommunicationHelper;
 import com.hieutm.homepi.homecontrol.HomeControlService;
 import com.hieutm.homepi.models.Device;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
@@ -22,10 +25,11 @@ import io.reactivex.annotations.NonNull;
 public class RegisterDeviceViewModel extends ViewModel {
     private static final BluetoothHelper BLUETOOTH_HELPER = BluetoothHelper.getInstance();
 
+    private final Map<String, BluetoothDevice> mac2DeviceMap;
     private final MutableLiveData<Boolean> isBluetoothEnabled;
     private final MutableLiveData<List<BluetoothDevice>> devices;
     private final MutableLiveData<Boolean> isDiscovering;
-    private final MutableLiveData<Boolean> isRegistering;
+    private final MutableLiveData<Boolean> isLoading;
     private final AuthenticationService authService;
     private final HomeControlService homeControlService;
 
@@ -33,9 +37,10 @@ public class RegisterDeviceViewModel extends ViewModel {
         this.authService = authService;
         this.homeControlService = homeControlService;
         isBluetoothEnabled = new MutableLiveData<>(BLUETOOTH_HELPER.isBluetoothEnabled());
-        devices = new MutableLiveData<>(BLUETOOTH_HELPER.getPairedDevices());
+        mac2DeviceMap = new HashMap<>();
+        devices = new MutableLiveData<>(new ArrayList<>());
         isDiscovering = new MutableLiveData<>(false);
-        isRegistering = new MutableLiveData<>(false);
+        isLoading = new MutableLiveData<>(false);
     }
 
     public LiveData<Boolean> getIsBluetoothEnabled() {
@@ -50,8 +55,8 @@ public class RegisterDeviceViewModel extends ViewModel {
         return isDiscovering;
     }
 
-    public LiveData<Boolean> getIsRegistering() {
-        return isRegistering;
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
     }
 
     public void refreshBluetoothStatus() {
@@ -60,18 +65,23 @@ public class RegisterDeviceViewModel extends ViewModel {
     }
 
     public void startDiscovering() {
-        isDiscovering.setValue(true);
+        mac2DeviceMap.clear();
+        BLUETOOTH_HELPER.getPairedDevices().forEach(item -> mac2DeviceMap.put(item.getAddress(), item));
+        devices.postValue(new ArrayList<>(mac2DeviceMap.values()));
+        isLoading.postValue(true);
+        isDiscovering.postValue(true);
         BLUETOOTH_HELPER.startDiscovering();
     }
 
     public void stopDiscovering() {
-        isDiscovering.setValue(false);
+        isLoading.postValue(false);
+        isDiscovering.postValue(false);
         BLUETOOTH_HELPER.stopDiscovering();
     }
 
     public void addDiscoveredDevice(BluetoothDevice device) {
-        devices.getValue().add(device);
-        devices.setValue(devices.getValue());
+        mac2DeviceMap.put(device.getAddress(), device);
+        devices.postValue(new ArrayList<>(mac2DeviceMap.values()));
     }
 
     @SuppressLint("CheckResult")
@@ -80,7 +90,7 @@ public class RegisterDeviceViewModel extends ViewModel {
         return new Single<Device>() {
             @Override
             protected void subscribeActual(@NonNull SingleObserver<? super Device> observer) {
-                isRegistering.postValue(true);
+                isLoading.postValue(true);
                 authService.getCurrentUser().subscribe(user -> helper
                         .connect()
                         .andThen(helper.getWifiStatus())
@@ -115,7 +125,7 @@ public class RegisterDeviceViewModel extends ViewModel {
                         }), observer::onError, () -> observer.onError(new RuntimeException("User is not logged in")));
             }
         }.doFinally(() -> {
-            isRegistering.postValue(false);
+            isLoading.postValue(false);
             helper.disconnect();
         });
     }

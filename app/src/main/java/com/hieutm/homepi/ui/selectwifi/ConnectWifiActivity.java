@@ -83,6 +83,10 @@ public class ConnectWifiActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
         if (item.getItemId() == R.id.connect_wifi_refresh_option) {
             scanWifi();
             return true;

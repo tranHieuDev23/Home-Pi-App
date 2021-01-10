@@ -68,11 +68,10 @@ public class BluetoothHelper {
                 }
                 adapter.cancelDiscovery();
                 BluetoothDevice device = adapter.getRemoteDevice(mac);
-                UUID uuid = device.getUuids()[0].getUuid();
 
                 BluetoothSocket socket;
                 try {
-                    socket = device.createRfcommSocketToServiceRecord(uuid);
+                    socket = device.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
                 } catch (IOException e) {
                     observer.onError(new RuntimeException("Exception happened while creating RFCOMM socket", e));
                     return;

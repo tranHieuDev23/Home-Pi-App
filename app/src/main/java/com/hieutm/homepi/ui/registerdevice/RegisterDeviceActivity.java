@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -43,6 +45,8 @@ public class RegisterDeviceActivity extends AppCompatActivity {
     private static final int BLUETOOTH_REQUEST_ID = 2;
     private static final int WIFI_REQUEST_ID = 3;
 
+    private static final long DISCOVERY_DELAY = 5000;
+
     private RegisterDeviceViewModel viewModel;
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -75,11 +79,14 @@ public class RegisterDeviceActivity extends AppCompatActivity {
             if (bluetoothEnabled) {
                 enableBluetoothLayout.setVisibility(View.INVISIBLE);
                 registerLayout.setVisibility(View.VISIBLE);
+                startDiscovering();
             } else {
                 enableBluetoothLayout.setVisibility(View.VISIBLE);
                 registerLayout.setVisibility(View.INVISIBLE);
             }
+            invalidateOptionsMenu();
         });
+        viewModel.getIsDiscovering().observe(this, isDiscovering -> invalidateOptionsMenu());
 
         RecyclerView deviceListView = findViewById(R.id.register_device_activity_list_view);
         BluetoothDeviceListAdapter adapter = new BluetoothDeviceListAdapter(new ArrayList<>(), (position, bluetoothDevice) -> registerDevice(bluetoothDevice.getAddress()));
@@ -88,7 +95,7 @@ public class RegisterDeviceActivity extends AppCompatActivity {
         viewModel.getDevices().observe(this, adapter::setDevices);
 
         ProgressBar progressBar = findViewById(R.id.register_device_activity_progress_bar);
-        viewModel.getIsRegistering().observe(this, isRegistering -> progressBar.setVisibility(isRegistering ? View.VISIBLE : View.GONE));
+        viewModel.getIsLoading().observe(this, isLoading -> progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE));
 
         viewModel.refreshBluetoothStatus();
     }
@@ -97,6 +104,35 @@ public class RegisterDeviceActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(receiver);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.register_device_app_bar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        boolean bluetoothEnabled = viewModel.getIsBluetoothEnabled().getValue();
+        menu.getItem(0).setVisible(bluetoothEnabled);
+        if (bluetoothEnabled) {
+            boolean isDiscovering = viewModel.getIsDiscovering().getValue();
+            menu.getItem(0).setIcon(isDiscovering ? R.drawable.ic_baseline_stop_24 : R.drawable.ic_refresh_white_24);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.register_device_refresh_option) {
+            if (viewModel.getIsDiscovering().getValue()) {
+                stopDiscovering();
+            } else {
+                startDiscovering();
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -118,7 +154,7 @@ public class RegisterDeviceActivity extends AppCompatActivity {
                     if (!success) {
                         Toast.makeText(this, R.string.register_device_activity_wifi_not_connected, Toast.LENGTH_LONG).show();
                     }
-                    viewModel.registerDevice(data.getStringExtra(ConnectWifiActivity.OUTPUT_MAC_KEY));
+                     registerDevice(data.getStringExtra(ConnectWifiActivity.OUTPUT_MAC_KEY));
                     break;
             }
         }
@@ -165,6 +201,18 @@ public class RegisterDeviceActivity extends AppCompatActivity {
                     REQUIRED_PERMISSIONS);
             return;
         }
-        this.viewModel.startDiscovering();
+        viewModel.startDiscovering();
+        new Thread(() -> {
+            try {
+                Thread.sleep(DISCOVERY_DELAY);
+            } catch (InterruptedException e) {
+                // Intentionally ignored
+            }
+            stopDiscovering();
+        }).start();
+    }
+
+    private void stopDiscovering() {
+        viewModel.stopDiscovering();
     }
 }
