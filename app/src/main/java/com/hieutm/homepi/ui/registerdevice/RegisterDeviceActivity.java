@@ -45,7 +45,7 @@ public class RegisterDeviceActivity extends AppCompatActivity {
     private static final int BLUETOOTH_REQUEST_ID = 2;
     private static final int WIFI_REQUEST_ID = 3;
 
-    private static final long DISCOVERY_DELAY = 5000;
+    private static final long DISCOVERY_DELAY = 10000;
 
     private RegisterDeviceViewModel viewModel;
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -112,6 +112,7 @@ public class RegisterDeviceActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        stopDiscovering();
         unregisterReceiver(receiver);
     }
 
