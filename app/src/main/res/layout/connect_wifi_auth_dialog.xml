@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="@string/connect_wifi_auth_dialog_ssid"
+        android:text="@string/connect_wifi_activity_auth_dialog_ssid"
         android:textSize="20sp" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:ems="10"
-            android:hint="@string/connect_wifi_auth_dialog_password"
+            android:hint="@string/connect_wifi_activity_auth_dialog_password"
             android:importantForAutofill="no"
             android:inputType="textPassword" />
 

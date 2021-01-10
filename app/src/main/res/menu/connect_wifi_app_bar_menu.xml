@@ -4,6 +4,6 @@
     <item
         android:id="@+id/connect_wifi_refresh_option"
         android:icon="@drawable/ic_refresh_white_24"
-        android:title="@string/connect_wifi_refresh"
+        android:title="@string/connect_wifi_activity_refresh"
         app:showAsAction="always" />
 </menu>

@@ -52,7 +52,7 @@
         </activity>
         <activity
             android:name=".ui.selectwifi.ConnectWifiActivity"
-            android:label="@string/connect_wifi_title" />
+            android:label="@string/connect_wifi_activity_title" />
     </application>
 
 </manifest>

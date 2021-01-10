@@ -6,38 +6,65 @@
     android:layout_height="match_parent"
     tools:context=".ui.selectwifi.ConnectWifiActivity">
 
+    <LinearLayout
+        android:id="@+id/connect_wifi_activity_enable_bluetooth_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/connect_wifi_activity_bluetooth_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="@string/connect_wifi_activity_please_enable_bluetooth" />
+
+        <Button
+            android:id="@+id/connect_wifi_activity_enable_bluetooth_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/connect_wifi_activity_enable_bluetooth_button" />
+
+    </LinearLayout>
+
     <ProgressBar
-        android:id="@+id/select_wifi_progress_bar"
+        android:id="@+id/connect_wifi_activity_progress_bar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="true"
-        app:layout_constraintBottom_toTopOf="@id/select_wifi_text_view"
+        app:layout_constraintBottom_toTopOf="@id/connect_wifi_activity_text_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/select_wifi_text_view"
+        android:id="@+id/connect_wifi_activity_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:paddingHorizontal="@dimen/activity_horizontal_margin"
         android:paddingVertical="@dimen/activity_vertical_margin"
-        android:text="@string/connect_wifi_please_select_wifi"
-        app:layout_constraintBottom_toTopOf="@id/select_wifi_list_view"
+        android:text="@string/connect_wifi_activity_please_select_wifi"
+        app:layout_constraintBottom_toTopOf="@id/connect_wifi_activity_list_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/select_wifi_list_view"
+        android:id="@+id/connect_wifi_activity_list_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/select_wifi_text_view" />
+        app:layout_constraintTop_toBottomOf="@id/connect_wifi_activity_text_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

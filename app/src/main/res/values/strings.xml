@@ -33,14 +33,16 @@
     <string name="register_device_activity_enable_bluetooth_button">Enable bluetooth</string>
     <string name="register_device_refresh">Refresh</string>
     <string name="register_device_an_error_happened">An error happened and we cannot register your device</string>
-    <string name="connect_wifi_title">Select WiFi Network</string>
-    <string name="connect_wifi_please_select_wifi">Please select a WiFi network for the device to connect to</string>
-    <string name="connect_wifi_auth_dialog_ssid">SSID</string>
-    <string name="connect_wifi_bottom_sheet_connect">Connect</string>
-    <string name="connect_wifi_auth_dialog_password">Password</string>
+    <string name="connect_wifi_activity_title">Select WiFi Network</string>
+    <string name="connect_wifi_activity_please_select_wifi">Please select a WiFi network for the device to connect to</string>
+    <string name="connect_wifi_activity_auth_dialog_ssid">SSID</string>
+    <string name="connect_wifi_activity_bottom_sheet_connect">Connect</string>
+    <string name="connect_wifi_activity_auth_dialog_password">Password</string>
     <string name="wifi_list_item_image_description">WiFi Image</string>
     <string name="wifi_list_item_title">WiFi SSID</string>
-    <string name="connect_wifi_failure">Cannot connect to WiFi network</string>
+    <string name="connect_wifi_activity_failure">Cannot connect to WiFi network</string>
     <string name="register_device_activity_wifi_not_connected">Device is not connected to WiFi, cannot register</string>
-    <string name="connect_wifi_refresh">Refresh</string>
+    <string name="connect_wifi_activity_refresh">Refresh</string>
+    <string name="connect_wifi_activity_please_enable_bluetooth">Please enable Bluetooth to continue</string>
+    <string name="connect_wifi_activity_enable_bluetooth_button">Enable bluetooth</string>
 </resources>

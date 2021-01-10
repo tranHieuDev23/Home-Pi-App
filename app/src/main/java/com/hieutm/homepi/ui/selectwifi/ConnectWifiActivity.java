@@ -46,12 +46,12 @@ public class ConnectWifiActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        RecyclerView listView = findViewById(R.id.select_wifi_list_view);
+        RecyclerView listView = findViewById(R.id.connect_wifi_activity_list_view);
         WifiListAdapter adapter = new WifiListAdapter(new ArrayList<>(), viewModel::selectWifiNetWork);
         listView.setAdapter(adapter);
         viewModel.getWifiNetworks().observe(this, adapter::setObjects);
 
-        ProgressBar progressBar = findViewById(R.id.select_wifi_progress_bar);
+        ProgressBar progressBar = findViewById(R.id.connect_wifi_activity_progress_bar);
         viewModel.getIsLoading().observe(this, isLoading -> progressBar.setVisibility(isLoading? View.VISIBLE : View.GONE));
 
         viewModel.getSelectedWifiNetwork().observe(this, wifiNetwork -> {
@@ -108,7 +108,7 @@ public class ConnectWifiActivity extends AppCompatActivity {
                 .connectWifi(wifiNetwork, psk)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::responseConnectSuccess, throwable -> Toast.makeText(getBaseContext(), R.string.connect_wifi_failure, Toast.LENGTH_LONG).show());
+                .subscribe(this::responseConnectSuccess, throwable -> Toast.makeText(getBaseContext(), R.string.connect_wifi_activity_failure, Toast.LENGTH_LONG).show());
     }
 
     private void responseConnectSuccess() {
