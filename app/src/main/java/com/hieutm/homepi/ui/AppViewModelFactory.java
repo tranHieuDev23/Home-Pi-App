@@ -12,6 +12,7 @@ import com.hieutm.homepi.ui.commander.CommanderViewModel;
 import com.hieutm.homepi.ui.device.DeviceViewModel;
 import com.hieutm.homepi.ui.login.LoginViewModel;
 import com.hieutm.homepi.ui.registerdevice.RegisterDeviceViewModel;
+import com.hieutm.homepi.ui.selectwifi.ConnectWifiViewModel;
 
 public class AppViewModelFactory implements ViewModelProvider.Factory {
     private final AuthenticationService authService;
@@ -45,7 +46,10 @@ public class AppViewModelFactory implements ViewModelProvider.Factory {
             return (T) new DeviceViewModel(homeControlService);
         }
         if (modelClass.isAssignableFrom(RegisterDeviceViewModel.class)) {
-            return (T) new RegisterDeviceViewModel();
+            return (T) new RegisterDeviceViewModel(authService, homeControlService);
+        }
+        if (modelClass.isAssignableFrom(ConnectWifiViewModel.class)) {
+            return (T) new ConnectWifiViewModel();
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

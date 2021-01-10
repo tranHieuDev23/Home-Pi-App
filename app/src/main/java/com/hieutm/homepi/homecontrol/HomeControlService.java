@@ -75,10 +75,28 @@ public class HomeControlService {
         };
     }
 
-    public Single<Commander> registerCommander(@NotNull String commanderId) {
-        return new Single<Commander>() {
+    public static class CommanderRegistrationResponse {
+        private final Commander commander;
+        private final String token;
+
+        public CommanderRegistrationResponse(Commander commander, String token) {
+            this.commander = commander;
+            this.token = token;
+        }
+
+        public Commander getCommander() {
+            return commander;
+        }
+
+        public String getToken() {
+            return token;
+        }
+    }
+
+    public Single<CommanderRegistrationResponse> registerCommander(@NotNull String commanderId) {
+        return new Single<CommanderRegistrationResponse>() {
             @Override
-            protected void subscribeActual(@NonNull SingleObserver<? super Commander> observer) {
+            protected void subscribeActual(@NonNull SingleObserver<? super CommanderRegistrationResponse> observer) {
                 JSONObject requestBody = new JSONObject();
                 try {
                     requestBody.put("commanderId", commanderId);
@@ -95,7 +113,8 @@ public class HomeControlService {
                                 JSONObject commanderJson = response.getJSONObject("commander");
                                 String id = commanderJson.getString("id");
                                 String displayName = commanderJson.getString("displayName");
-                                observer.onSuccess(new Commander(id, displayName));
+                                String token = response.getString("token");
+                                observer.onSuccess(new CommanderRegistrationResponse(new Commander(id, displayName), token));
                             } catch (Exception e) {
                                 observer.onError(e);
                             }
@@ -133,11 +152,28 @@ public class HomeControlService {
         };
     }
 
+    public static class DeviceRegistrationResponse {
+        private final Device device;
+        private final String token;
 
-    public Single<Device> registerDevice(@NotNull String deviceId) {
-        return new Single<Device>() {
+        public DeviceRegistrationResponse(Device device, String token) {
+            this.device = device;
+            this.token = token;
+        }
+
+        public Device getDevice() {
+            return device;
+        }
+
+        public String getToken() {
+            return token;
+        }
+    }
+
+    public Single<DeviceRegistrationResponse> registerDevice(@NotNull String deviceId) {
+        return new Single<DeviceRegistrationResponse>() {
             @Override
-            protected void subscribeActual(@NonNull SingleObserver<? super Device> observer) {
+            protected void subscribeActual(@NonNull SingleObserver<? super DeviceRegistrationResponse> observer) {
                 JSONObject requestBody = new JSONObject();
                 try {
                     requestBody.put("deviceId", deviceId);
@@ -155,7 +191,8 @@ public class HomeControlService {
                                 String id = deviceJson.getString("id");
                                 String displayName = deviceJson.getString("displayName");
                                 DeviceType type = DeviceType.valueOf(deviceJson.getString("type"));
-                                observer.onSuccess(new Device(id, displayName, type));
+                                String token = response.getString("token");
+                                observer.onSuccess(new DeviceRegistrationResponse(new Device(id, displayName, type), token));
                             } catch (Exception e) {
                                 observer.onError(e);
                             }

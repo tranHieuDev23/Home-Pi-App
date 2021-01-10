@@ -5,6 +5,9 @@
       <w>registercommander</w>
       <w>registerdevice</w>
       <w>rfcomm</w>
+      <w>selectwifi</w>
+      <w>ssid</w>
+      <w>ssids</w>
       <w>swipeable</w>
     </words>
   </dictionary>

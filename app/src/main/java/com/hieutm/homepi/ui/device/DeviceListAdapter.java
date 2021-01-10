@@ -19,7 +19,7 @@ import java.util.List;
 
 public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private  final View view;
+        private final View view;
         private final ImageView deviceImageView;
         private final TextView deviceTitleView;
         private final TextView deviceSubtitleView;
@@ -70,7 +70,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.Vi
     @Override
     public DeviceListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.device_item, parent, false);
-        return new DeviceListAdapter.ViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override

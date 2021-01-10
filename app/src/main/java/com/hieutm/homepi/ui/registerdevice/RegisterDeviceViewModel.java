@@ -7,32 +7,33 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.hieutm.homepi.auth.AuthenticationService;
 import com.hieutm.homepi.bluetooth.BluetoothHelper;
+import com.hieutm.homepi.homecontrol.DeviceCommunicationHelper;
+import com.hieutm.homepi.homecontrol.HomeControlService;
 import com.hieutm.homepi.models.Device;
-import com.hieutm.homepi.models.DeviceType;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.schedulers.Schedulers;
 
 public class RegisterDeviceViewModel extends ViewModel {
     private static final BluetoothHelper BLUETOOTH_HELPER = BluetoothHelper.getInstance();
 
     private final MutableLiveData<Boolean> isBluetoothEnabled;
-    private final MutableLiveData<List<BluetoothDeviceListItem>> devices;
+    private final MutableLiveData<List<BluetoothDevice>> devices;
     private final MutableLiveData<Boolean> isDiscovering;
     private final MutableLiveData<Boolean> isRegistering;
+    private final AuthenticationService authService;
+    private final HomeControlService homeControlService;
 
-    public RegisterDeviceViewModel() {
+    public RegisterDeviceViewModel(AuthenticationService authService, HomeControlService homeControlService) {
+        this.authService = authService;
+        this.homeControlService = homeControlService;
         isBluetoothEnabled = new MutableLiveData<>(BLUETOOTH_HELPER.isBluetoothEnabled());
-        devices = new MutableLiveData<>(BLUETOOTH_HELPER.getPairedDevices().stream()
-                .map(item -> new BluetoothDeviceListItem(item, false))
-                .collect(Collectors.toList()));
+        devices = new MutableLiveData<>(BLUETOOTH_HELPER.getPairedDevices());
         isDiscovering = new MutableLiveData<>(false);
         isRegistering = new MutableLiveData<>(false);
     }
@@ -41,11 +42,11 @@ public class RegisterDeviceViewModel extends ViewModel {
         return isBluetoothEnabled;
     }
 
-    public LiveData<List<BluetoothDeviceListItem>> getDevices() {
+    public LiveData<List<BluetoothDevice>> getDevices() {
         return devices;
     }
 
-    public LiveData<Boolean> getIsDiscovering() {
+    public MutableLiveData<Boolean> getIsDiscovering() {
         return isDiscovering;
     }
 
@@ -55,9 +56,7 @@ public class RegisterDeviceViewModel extends ViewModel {
 
     public void refreshBluetoothStatus() {
         isBluetoothEnabled.setValue(BLUETOOTH_HELPER.isBluetoothEnabled());
-        devices.setValue((BLUETOOTH_HELPER.getPairedDevices().stream()
-                .map(item -> new BluetoothDeviceListItem(item, false))
-                .collect(Collectors.toList())));
+        devices.setValue(BLUETOOTH_HELPER.getPairedDevices());
     }
 
     public void startDiscovering() {
@@ -71,50 +70,53 @@ public class RegisterDeviceViewModel extends ViewModel {
     }
 
     public void addDiscoveredDevice(BluetoothDevice device) {
-        List<BluetoothDeviceListItem> newList = devices.getValue();
-        //noinspection ConstantConditions
-        newList.add(new BluetoothDeviceListItem(device, false));
-        devices.setValue(newList);
+        devices.getValue().add(device);
+        devices.setValue(devices.getValue());
     }
 
     @SuppressLint("CheckResult")
-    public Single<Device> registerDevice(int position) {
+    public Single<Device> registerDevice(String mac) {
+        DeviceCommunicationHelper helper = new DeviceCommunicationHelper(mac);
         return new Single<Device>() {
             @Override
             protected void subscribeActual(@NonNull SingleObserver<? super Device> observer) {
-                setDeviceListItemRegistering(position, true);
-                @SuppressWarnings("ConstantConditions") BluetoothDeviceListItem device = devices.getValue().get(position);
-                String mac = device.getDevice().getAddress();
-                BLUETOOTH_HELPER.connect(mac)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe((bluetoothCommunicationHandler, bluetoothConnectionError) -> {
-                            if (bluetoothConnectionError != null) {
-                                setDeviceListItemRegistering(position, false);
-                                observer.onError(bluetoothConnectionError);
+                isRegistering.postValue(true);
+                authService.getCurrentUser().subscribe(user -> helper
+                        .connect()
+                        .andThen(helper.getWifiStatus())
+                        .subscribe((connected, connectThrowable) -> {
+                            if (connectThrowable != null) {
+                                observer.onError(connectThrowable);
                                 return;
                             }
-                            bluetoothCommunicationHandler.sendMessage("{\"action\": \"getId\"}")
-                                    .subscribe((response, bluetoothCommunicationError) -> {
-                                        if (bluetoothCommunicationError != null) {
-                                            setDeviceListItemRegistering(position, false);
-                                            observer.onError(bluetoothCommunicationError);
+                            if (!connected) {
+                                observer.onError(new DeviceNotConnectedToWifiException());
+                                return;
+                            }
+                            helper
+                                    .getDeviceId()
+                                    .subscribe((id, getIdThrowable) -> {
+                                        if (getIdThrowable != null) {
+                                            observer.onError(getIdThrowable);
                                             return;
                                         }
-                                        setDeviceListItemRegistering(position, false);
-                                        observer.onSuccess(new Device(response, "Home Pi Light", DeviceType.LIGHT));
+                                        homeControlService
+                                                .registerDevice(id)
+                                                .subscribe((response, registerThrowable) -> {
+                                                    if (registerThrowable != null) {
+                                                        observer.onError(registerThrowable);
+                                                        return;
+                                                    }
+                                                    helper
+                                                            .registerDevice(user.getCommandTopic(), user.getStatusTopic(), response.getToken())
+                                                            .subscribe(() -> observer.onSuccess(response.getDevice()), observer::onError);
+                                                });
                                     });
-
-                        });
+                        }), observer::onError, () -> observer.onError(new RuntimeException("User is not logged in")));
             }
-        };
-    }
-
-    private void setDeviceListItemRegistering(int position, boolean isLoading) {
-        this.isRegistering.postValue(isLoading);
-        List<BluetoothDeviceListItem> newList = devices.getValue();
-        //noinspection ConstantConditions
-        newList.get(position).setLoading(isLoading);
-        devices.setValue(newList);
+        }.doFinally(() -> {
+            isRegistering.postValue(false);
+            helper.disconnect();
+        });
     }
 }

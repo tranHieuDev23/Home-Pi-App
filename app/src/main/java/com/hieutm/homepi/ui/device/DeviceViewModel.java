@@ -1,15 +1,14 @@
 package com.hieutm.homepi.ui.device;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.hieutm.homepi.R;
-import com.hieutm.homepi.models.Device;
 import com.hieutm.homepi.homecontrol.HomeControlService;
+import com.hieutm.homepi.models.Device;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -23,17 +22,10 @@ public class DeviceViewModel extends ViewModel {
 
     @SuppressLint("CheckResult")
     public DeviceViewModel(HomeControlService homeControlService) {
-        this.devices = new MutableLiveData<>(new ArrayList<>());
+        this.devices = new MutableLiveData<>();
         this.errors = new MutableLiveData<>(null);
         this.homeControlService = homeControlService;
-        this.homeControlService.getDevicesOfUser().subscribe(device -> {
-            //noinspection Convert2MethodRef
-            addDevice(device);
-        }, error -> {
-            errors.setValue(R.string.error_cannot_connect);
-        }, () -> {
-
-        });
+        this.refresh();
     }
 
     public LiveData<List<Device>> getDevices() {
@@ -44,29 +36,24 @@ public class DeviceViewModel extends ViewModel {
         return errors;
     }
 
-    @SuppressLint("CheckResult")
-    public void registerDevice(@NotNull String deviceId) {
-        homeControlService.registerDevice(deviceId).subscribe(this::addDevice, error -> {
-            Log.e(DeviceViewModel.class.getName(), error.getMessage());
-            errors.setValue(R.string.error_cannot_connect);
-        });
-    }
-
     public void unregisterDevice(@NotNull String deviceId) {
         removeDevice(deviceId);
     }
 
+    @SuppressLint("CheckResult")
+    public void refresh() {
+        devices.setValue(new ArrayList<>());
+        this.homeControlService.getDevicesOfUser().subscribe(this::addDevice, error -> errors.setValue(R.string.error_cannot_connect), () -> {
+        });
+    }
+
     private void addDevice(@NotNull Device device) {
-        List<Device> newList = devices.getValue();
-        //noinspection ConstantConditions
-        newList.add(device);
-        devices.setValue(newList);
+        devices.getValue().add(device);
+        devices.setValue(devices.getValue());
     }
 
     private void removeDevice(@NotNull String deviceId) {
-        List<Device> newList = devices.getValue();
-        //noinspection ConstantConditions
-        newList.removeIf(item -> item.getId().equals(deviceId));
-        devices.setValue(newList);
+        devices.getValue().removeIf(item -> item.getId().equals(deviceId));
+        devices.setValue(devices.getValue());
     }
 }

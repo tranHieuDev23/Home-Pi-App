@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,9 +23,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hieutm.homepi.R;
 import com.hieutm.homepi.ui.AppViewModelFactory;
+import com.hieutm.homepi.ui.selectwifi.ConnectWifiActivity;
 
 import java.util.ArrayList;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -37,6 +41,7 @@ public class RegisterDeviceActivity extends AppCompatActivity {
     };
     private static final int PERMISSION_REQUEST_ID = 1;
     private static final int BLUETOOTH_REQUEST_ID = 2;
+    private static final int WIFI_REQUEST_ID = 3;
 
     private RegisterDeviceViewModel viewModel;
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -77,18 +82,13 @@ public class RegisterDeviceActivity extends AppCompatActivity {
         });
 
         RecyclerView deviceListView = findViewById(R.id.register_device_activity_list_view);
-        @SuppressLint("CheckResult") BluetoothDeviceListAdapter adapter = new BluetoothDeviceListAdapter(new ArrayList<>(), (position, bluetoothDevice) -> {
-            viewModel.registerDevice(position).subscribe((device, throwable) -> {
-                if (throwable != null) {
-                    Toast.makeText(getBaseContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getBaseContext(), device.getId(), Toast.LENGTH_LONG).show();
-                }
-            });
-        });
+        BluetoothDeviceListAdapter adapter = new BluetoothDeviceListAdapter(new ArrayList<>(), (position, bluetoothDevice) -> registerDevice(bluetoothDevice.getAddress()));
         deviceListView.setAdapter(adapter);
         deviceListView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         viewModel.getDevices().observe(this, adapter::setDevices);
+
+        ProgressBar progressBar = findViewById(R.id.register_device_activity_progress_bar);
+        viewModel.getIsRegistering().observe(this, isRegistering -> progressBar.setVisibility(isRegistering ? View.VISIBLE : View.GONE));
 
         viewModel.refreshBluetoothStatus();
     }
@@ -108,14 +108,51 @@ public class RegisterDeviceActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == BLUETOOTH_REQUEST_ID) {
-            viewModel.refreshBluetoothStatus();
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case BLUETOOTH_REQUEST_ID:
+                    viewModel.refreshBluetoothStatus();
+                    break;
+                case WIFI_REQUEST_ID:
+                    boolean success = data.getBooleanExtra(ConnectWifiActivity.OUTPUT_SUCCESS_KEY, false);
+                    if (!success) {
+                        Toast.makeText(this, R.string.register_device_activity_wifi_not_connected, Toast.LENGTH_LONG).show();
+                    }
+                    viewModel.registerDevice(data.getStringExtra(ConnectWifiActivity.OUTPUT_MAC_KEY));
+                    break;
+            }
         }
     }
 
     private void requestBluetooth() {
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         startActivityForResult(enableBtIntent, BLUETOOTH_REQUEST_ID);
+    }
+
+    @SuppressLint("CheckResult")
+    private void registerDevice(String mac) {
+        viewModel
+                .registerDevice(mac)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((device, throwable) -> {
+                    if (throwable != null) {
+                        if (throwable instanceof DeviceNotConnectedToWifiException) {
+                            requestDeviceConnectWifi(mac);
+                            return;
+                        }
+                        Toast.makeText(getBaseContext(), R.string.register_device_an_error_happened, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    finish();
+                });
+    }
+
+    @SuppressLint("CheckResult")
+    private void requestDeviceConnectWifi(String mac) {
+        Intent wifiActivityIntent = new Intent(getBaseContext(), ConnectWifiActivity.class);
+        wifiActivityIntent.putExtra(ConnectWifiActivity.INPUT_EXTRA_MAC_KEY, mac);
+        startActivityForResult(wifiActivityIntent, WIFI_REQUEST_ID);
     }
 
     @AfterPermissionGranted(PERMISSION_REQUEST_ID)

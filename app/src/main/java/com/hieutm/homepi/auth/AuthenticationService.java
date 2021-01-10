@@ -58,7 +58,9 @@ public class AuthenticationService {
                     try {
                         String username = response.getString("username");
                         String displayName = response.getString("displayName");
-                        currentUser = new LoggedInUser(username, displayName);
+                        String commandTopic = response.getString("commandTopic");
+                        String statusTopic = response.getString("statusTopic");
+                        currentUser = new LoggedInUser(username, displayName, commandTopic, statusTopic);
                         observer.onSuccess(currentUser);
                     } catch (JSONException e) {
                         // Ignored because exceptions cannot happen
@@ -88,7 +90,9 @@ public class AuthenticationService {
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ApiUrls.AUTH_LOGIN_URL, requestBody, response -> {
                     try {
                         String displayName = response.getString("displayName");
-                        currentUser = new LoggedInUser(username, displayName);
+                        String commandTopic = response.getString("commandTopic");
+                        String statusTopic = response.getString("statusTopic");
+                        currentUser = new LoggedInUser(username, displayName, commandTopic, statusTopic);
                         observer.onSuccess(currentUser);
                     } catch (JSONException e) {
                         observer.onError(e);

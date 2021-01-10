@@ -1,15 +1,14 @@
 package com.hieutm.homepi.ui.commander;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.hieutm.homepi.R;
-import com.hieutm.homepi.models.Commander;
 import com.hieutm.homepi.homecontrol.HomeControlService;
+import com.hieutm.homepi.models.Commander;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -23,17 +22,10 @@ public class CommanderViewModel extends ViewModel {
 
     @SuppressLint("CheckResult")
     public CommanderViewModel(HomeControlService homeControlService) {
-        this.commanders = new MutableLiveData<>(new ArrayList<>());
+        this.commanders = new MutableLiveData<>();
         this.errors = new MutableLiveData<>(null);
         this.homeControlService = homeControlService;
-        this.homeControlService.getCommandersOfUser().subscribe(commander -> {
-            //noinspection Convert2MethodRef
-            addCommander(commander);
-        }, error -> {
-            errors.setValue(R.string.error_cannot_connect);
-        }, () -> {
-
-        });
+        refresh();
     }
 
     public LiveData<List<Commander>> getCommanders() {
@@ -44,29 +36,28 @@ public class CommanderViewModel extends ViewModel {
         return errors;
     }
 
-    @SuppressLint("CheckResult")
-    public void registerCommander(@NotNull String commanderId) {
-        homeControlService.registerCommander(commanderId).subscribe(this::addCommander, error -> {
-            Log.e(CommanderViewModel.class.getName(), error.getMessage());
-            errors.setValue(R.string.error_cannot_connect);
-        });
-    }
-
     public void unregisterCommander(@NotNull String commanderId) {
         removeCommander(commanderId);
     }
 
+    @SuppressLint("CheckResult")
+    public void refresh() {
+        commanders.setValue(new ArrayList<>());
+        this.homeControlService.getCommandersOfUser().subscribe(commander -> {
+            //noinspection Convert2MethodRef
+            addCommander(commander);
+        }, error -> errors.setValue(R.string.error_cannot_connect), () -> {
+
+        });
+    }
+
     private void addCommander(@NotNull Commander commander) {
-        List<Commander> newList = commanders.getValue();
-        //noinspection ConstantConditions
-        newList.add(commander);
-        commanders.setValue(newList);
+        commanders.getValue().add(commander);
+        commanders.setValue(commanders.getValue());
     }
 
     private void removeCommander(@NotNull String commanderId) {
-        List<Commander> newList = commanders.getValue();
-        //noinspection ConstantConditions
-        newList.removeIf(item -> item.getId().equals(commanderId));
-        commanders.setValue(newList);
+        commanders.getValue().removeIf(item -> item.getId().equals(commanderId));
+        commanders.setValue(commanders.getValue());
     }
 }
