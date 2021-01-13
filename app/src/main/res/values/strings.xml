@@ -56,4 +56,10 @@
 
     <string name="wifi_list_item_image_description">WiFi Image</string>
     <string name="wifi_list_item_title">WiFi SSID</string>
+
+    <string name="settings_user_avatar">User avatar</string>
+    <string name="settings_user_display_name">User display name</string>
+    <string name="settings_username">Username</string>
+    <string name="settings_log_out">Log out</string>
+    <string name="settings_cannot_logout">Cannot log out</string>
 </resources>

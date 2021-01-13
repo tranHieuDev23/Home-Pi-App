@@ -14,6 +14,7 @@ import com.hieutm.homepi.ui.login.LoginViewModel;
 import com.hieutm.homepi.ui.registercommander.RegisterCommanderViewModel;
 import com.hieutm.homepi.ui.registerdevice.RegisterDeviceViewModel;
 import com.hieutm.homepi.ui.selectwifi.ConnectWifiViewModel;
+import com.hieutm.homepi.ui.settings.SettingsViewModel;
 
 public class AppViewModelFactory implements ViewModelProvider.Factory {
     private final AuthenticationService authService;
@@ -45,6 +46,9 @@ public class AppViewModelFactory implements ViewModelProvider.Factory {
         }
         if (modelClass.isAssignableFrom(DeviceViewModel.class)) {
             return (T) new DeviceViewModel(homeControlService);
+        }
+        if (modelClass.isAssignableFrom(SettingsViewModel.class)) {
+            return (T) new SettingsViewModel(authService);
         }
         if (modelClass.isAssignableFrom(RegisterCommanderViewModel.class)) {
             return (T) new RegisterCommanderViewModel(authService, homeControlService);
