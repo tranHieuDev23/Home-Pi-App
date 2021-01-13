@@ -136,15 +136,13 @@ public class DeviceCommunicationHelper {
         };
     }
 
-    public Completable registerDevice(@NotNull String commandTopic, @NotNull String statusTopic, @NotNull String token) {
+    public Completable registerDevice(@NotNull String token) {
         return new Completable() {
             @SuppressLint("CheckResult")
             @Override
             protected void subscribeActual(CompletableObserver s) {
                 JsonObject messageJson = new JsonObject();
                 messageJson.addProperty("action", "register");
-                messageJson.addProperty("commandTopic", commandTopic);
-                messageJson.addProperty("statusTopic", statusTopic);
                 messageJson.addProperty("token", token);
                 sendMessage(messageJson).subscribe((response, throwable) -> {
                    if (throwable != null) {

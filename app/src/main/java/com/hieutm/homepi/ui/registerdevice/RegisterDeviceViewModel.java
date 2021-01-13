@@ -116,7 +116,7 @@ public class RegisterDeviceViewModel extends ViewModel {
                                                         return;
                                                     }
                                                     helper
-                                                            .registerDevice(user.getCommandTopic(), user.getStatusTopic(), response.getToken())
+                                                            .registerDevice(response.getToken())
                                                             .subscribe(() -> observer.onSuccess(response.getDevice()), observer::onError);
                                                 });
                                     });

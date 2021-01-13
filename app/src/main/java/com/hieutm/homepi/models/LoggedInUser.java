@@ -6,14 +6,10 @@ package com.hieutm.homepi.models;
 public class LoggedInUser {
     private final String userId;
     private final String displayName;
-    private final String commandTopic;
-    private final String statusTopic;
 
-    public LoggedInUser(String userId, String displayName, String commandTopic, String statusTopic) {
+    public LoggedInUser(String userId, String displayName) {
         this.userId = userId;
         this.displayName = displayName;
-        this.commandTopic = commandTopic;
-        this.statusTopic = statusTopic;
     }
 
     public String getUsername() {
@@ -22,13 +18,5 @@ public class LoggedInUser {
 
     public String getDisplayName() {
         return displayName;
-    }
-
-    public String getCommandTopic() {
-        return commandTopic;
-    }
-
-    public String getStatusTopic() {
-        return statusTopic;
     }
 }
