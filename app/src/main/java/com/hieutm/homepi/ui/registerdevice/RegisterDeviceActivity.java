@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hieutm.homepi.R;
 import com.hieutm.homepi.ui.AppViewModelFactory;
+import com.hieutm.homepi.ui.components.BluetoothDeviceListAdapter;
 import com.hieutm.homepi.ui.selectwifi.ConnectWifiActivity;
 
 import java.util.ArrayList;

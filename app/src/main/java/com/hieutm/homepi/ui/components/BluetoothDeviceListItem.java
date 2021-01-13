@@ -1,4 +1,4 @@
-package com.hieutm.homepi.ui.registerdevice;
+package com.hieutm.homepi.ui.components;
 
 import android.bluetooth.BluetoothDevice;
 

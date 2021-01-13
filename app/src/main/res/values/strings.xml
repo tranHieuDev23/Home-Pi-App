@@ -2,6 +2,7 @@
     <string name="app_name">Home Pi</string>
     <string name="main_activity_home_pi_logo">Home Pi Logo</string>
     <string name="error_cannot_connect">Cannot connect to Home Pi server</string>
+
     <string name="login_activity_title">Login Activity</string>
     <string name="login_activity_prompt_username">Username</string>
     <string name="login_activity_prompt_password">Password</string>
@@ -11,35 +12,46 @@
     <string name="login_activity_invalid_username">Not a valid username</string>
     <string name="login_activity_invalid_password">Password must be >5 characters</string>
     <string name="login_activity_login_failed">"Login failed"</string>
+
     <string name="home_activity_title">Main Activity</string>
     <string name="home_activity_commanders">Commanders</string>
     <string name="home_activity_devices">Devices</string>
     <string name="home_activity_settings">Settings</string>
     <string name="home_activity_add_commander_device">Add commander device</string>
     <string name="home_activity_add_device">Add device</string>
+
     <string name="device_list_item_name">Device name</string>
     <string name="device_list_item_description">Device description</string>
     <string name="device_list_item_image">Device image</string>
     <string name="device_list_item_unregister">Unregister</string>
+
     <string name="register_commander_activity_register_commander">Register commander</string>
-    <string name="register_commander_activity_find_device">Find device</string>
-    <string name="register_commander_activity_connect_wifi">Connect WiFi</string>
+    <string name="register_commander_activity_guide">Make sure that your device\'s Bluetooth is enabled and is discoverable</string>
+    <string name="register_commander_activity_please_enable_bluetooth">Please enable Bluetooth to continue</string>
+    <string name="register_commander_activity_permission_rationale">Bluetooth and Location services are needed to discover Bluetooth devices</string>
+    <string name="register_commander_activity_enable_bluetooth_button">Enable bluetooth</string>
+    <string name="register_commander_activity_refresh">Refresh</string>
+    <string name="register_commander_an_error_happened">An error happened, cannot register commander</string>
+    <string name="register_commander_register_success">Registered commander successfully</string>
+
     <string name="register_device_activity_register_device">Register device</string>
     <string name="register_device_activity_guide">Make sure that your device\'s Bluetooth is enabled and is discoverable</string>
     <string name="register_device_activity_please_enable_bluetooth">Please enable Bluetooth to continue</string>
     <string name="register_device_activity_permission_rationale">Bluetooth and Location services are needed to discover Bluetooth devices</string>
     <string name="register_device_activity_enable_bluetooth_button">Enable bluetooth</string>
-    <string name="register_device_refresh">Refresh</string>
+    <string name="register_device_activity_refresh">Refresh</string>
     <string name="register_device_an_error_happened">An error happened, cannot register device</string>
+    <string name="register_device_register_success">Registered device successfully</string>
+
     <string name="connect_wifi_activity_title">Select WiFi Network</string>
     <string name="connect_wifi_activity_please_select_wifi">Please select a WiFi network for the device to connect to</string>
     <string name="connect_wifi_activity_auth_dialog_ssid">SSID</string>
     <string name="connect_wifi_activity_auth_dialog_password">Password</string>
-    <string name="wifi_list_item_image_description">WiFi Image</string>
-    <string name="wifi_list_item_title">WiFi SSID</string>
     <string name="connect_wifi_activity_failure">Cannot connect to WiFi network</string>
     <string name="connect_wifi_activity_refresh">Refresh</string>
     <string name="connect_wifi_activity_please_enable_bluetooth">Please enable Bluetooth to continue</string>
     <string name="connect_wifi_activity_enable_bluetooth_button">Enable bluetooth</string>
-    <string name="register_device_register_success">Registered device successfully</string>
+
+    <string name="wifi_list_item_image_description">WiFi Image</string>
+    <string name="wifi_list_item_title">WiFi SSID</string>
 </resources>

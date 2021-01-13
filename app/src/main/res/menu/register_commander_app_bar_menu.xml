@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/register_device_refresh_option"
+        android:id="@+id/register_commander_refresh_option"
         android:icon="@drawable/ic_refresh_white_24"
-        android:title="@string/register_device_activity_refresh"
+        android:title="@string/register_commander_activity_refresh"
         app:showAsAction="always" />
 </menu>

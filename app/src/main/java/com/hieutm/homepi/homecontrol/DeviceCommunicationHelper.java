@@ -166,7 +166,7 @@ public class DeviceCommunicationHelper {
                     observer.onError(new DeviceCommunicationException("Not yet connected"));
                     return;
                 }
-                communicationWrapper.sendMessage(message).subscribe((response, throwable) -> {
+                communicationWrapper.sendMessage(message, 30000).subscribe((response, throwable) -> {
                     if (throwable != null) {
                         observer.onError(throwable);
                         return;
