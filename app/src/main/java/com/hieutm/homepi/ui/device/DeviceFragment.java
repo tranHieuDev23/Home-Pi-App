@@ -4,8 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -38,10 +43,20 @@ public class DeviceFragment extends Fragment {
         final ViewModelProvider modelProvider = new ViewModelProvider((ViewModelStoreOwner) activity, viewModelFactory);
         deviceViewModel = modelProvider.get(DeviceViewModel.class);
 
+        deviceViewModel.getErrors().observe(getActivity(), error -> {
+            if (error == null) {
+                return;
+            }
+            Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+        });
+
+        ProgressBar progressBar = root.findViewById(R.id.device_progress_bar);
+        deviceViewModel.getIsLoading().observe(getActivity(), isLoading -> progressBar.setVisibility(isLoading? View.VISIBLE : View.INVISIBLE));
+
+
         RecyclerView deviceListView = root.findViewById(R.id.device_list_view);
         DeviceListAdapter adapter = new DeviceListAdapter(new ArrayList<>(), this::showBottomSheet);
         deviceListView.setAdapter(adapter);
-        //noinspection ConstantConditions
         deviceListView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         deviceViewModel.getDevices().observe(getActivity(), adapter::setDevices);
 
@@ -51,11 +66,29 @@ public class DeviceFragment extends Fragment {
             startActivity(intent);
         });
 
+        setHasOptionsMenu(true);
+
+        deviceViewModel.refresh();
+
         return root;
     }
 
     private void showBottomSheet(Device device) {
         DeviceBottomSheetFragment bottom = new DeviceBottomSheetFragment(device, d -> deviceViewModel.unregisterDevice(d.getId()));
         bottom.show(getParentFragmentManager(), "Device Bottom Sheet");
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.device_app_bar_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.device_refresh_option) {
+            deviceViewModel.refresh();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -18,14 +18,15 @@ import java.util.List;
 public class CommanderViewModel extends ViewModel {
     private final MutableLiveData<List<Commander>> commanders;
     private final MutableLiveData<Integer> errors;
+    private final MutableLiveData<Boolean> isLoading;
     private final HomeControlService homeControlService;
 
     @SuppressLint("CheckResult")
     public CommanderViewModel(HomeControlService homeControlService) {
         this.commanders = new MutableLiveData<>();
         this.errors = new MutableLiveData<>(null);
+        this.isLoading = new MutableLiveData<>(false);
         this.homeControlService = homeControlService;
-        refresh();
     }
 
     public LiveData<List<Commander>> getCommanders() {
@@ -36,6 +37,10 @@ public class CommanderViewModel extends ViewModel {
         return errors;
     }
 
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
     public void unregisterCommander(@NotNull String commanderId) {
         removeCommander(commanderId);
     }
@@ -43,12 +48,10 @@ public class CommanderViewModel extends ViewModel {
     @SuppressLint("CheckResult")
     public void refresh() {
         commanders.setValue(new ArrayList<>());
-        this.homeControlService.getCommandersOfUser().subscribe(commander -> {
-            //noinspection Convert2MethodRef
-            addCommander(commander);
-        }, error -> errors.setValue(R.string.error_cannot_connect), () -> {
-
-        });
+        isLoading.setValue(true);
+        this.homeControlService.getCommandersOfUser().subscribe(this::addCommander,
+                error -> errors.setValue(R.string.error_cannot_connect),
+                () -> isLoading.setValue(false));
     }
 
     private void addCommander(@NotNull Commander commander) {

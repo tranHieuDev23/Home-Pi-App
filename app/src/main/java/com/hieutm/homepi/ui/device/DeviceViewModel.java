@@ -18,14 +18,15 @@ import java.util.List;
 public class DeviceViewModel extends ViewModel {
     private final MutableLiveData<List<Device>> devices;
     private final MutableLiveData<Integer> errors;
+    private final MutableLiveData<Boolean> isLoading;
     private final HomeControlService homeControlService;
 
     @SuppressLint("CheckResult")
     public DeviceViewModel(HomeControlService homeControlService) {
         this.devices = new MutableLiveData<>();
         this.errors = new MutableLiveData<>(null);
+        this.isLoading = new MutableLiveData<>(false);
         this.homeControlService = homeControlService;
-        this.refresh();
     }
 
     public LiveData<List<Device>> getDevices() {
@@ -36,6 +37,10 @@ public class DeviceViewModel extends ViewModel {
         return errors;
     }
 
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
     public void unregisterDevice(@NotNull String deviceId) {
         removeDevice(deviceId);
     }
@@ -43,8 +48,11 @@ public class DeviceViewModel extends ViewModel {
     @SuppressLint("CheckResult")
     public void refresh() {
         devices.setValue(new ArrayList<>());
-        this.homeControlService.getDevicesOfUser().subscribe(this::addDevice, error -> errors.setValue(R.string.error_cannot_connect), () -> {
-        });
+        isLoading.setValue(true);
+        this.homeControlService.getDevicesOfUser().subscribe(
+                this::addDevice,
+                error -> errors.setValue(R.string.error_cannot_connect),
+                () -> isLoading.setValue(false));
     }
 
     private void addDevice(@NotNull Device device) {
