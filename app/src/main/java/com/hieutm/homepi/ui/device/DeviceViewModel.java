@@ -15,6 +15,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+
 public class DeviceViewModel extends ViewModel {
     private final MutableLiveData<List<Device>> devices;
     private final MutableLiveData<Integer> errors;
@@ -41,8 +44,19 @@ public class DeviceViewModel extends ViewModel {
         return isLoading;
     }
 
-    public void unregisterDevice(@NotNull String deviceId) {
-        removeDevice(deviceId);
+    public Completable unregisterDevice(@NotNull String deviceId) {
+        return new Completable() {
+            @SuppressLint("CheckResult")
+            @Override
+            protected void subscribeActual(CompletableObserver s) {
+                isLoading.postValue(true);
+                homeControlService
+                        .unregisterDevice(deviceId)
+                        .doFinally(() -> isLoading.postValue(false))
+                        .subscribe(() -> removeDevice(deviceId),
+                                throwable -> errors.setValue(R.string.error_cannot_connect));
+            }
+        };
     }
 
     @SuppressLint("CheckResult")
@@ -56,11 +70,13 @@ public class DeviceViewModel extends ViewModel {
     }
 
     private void addDevice(@NotNull Device device) {
+        //noinspection ConstantConditions
         devices.getValue().add(device);
         devices.setValue(devices.getValue());
     }
 
     private void removeDevice(@NotNull String deviceId) {
+        //noinspection ConstantConditions
         devices.getValue().removeIf(item -> item.getId().equals(deviceId));
         devices.setValue(devices.getValue());
     }

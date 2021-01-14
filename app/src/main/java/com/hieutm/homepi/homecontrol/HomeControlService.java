@@ -23,6 +23,8 @@ import java.net.CookiePolicy;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Single;
@@ -124,6 +126,29 @@ public class HomeControlService {
         };
     }
 
+    public Completable unregisterCommander(@NotNull String commanderId) {
+        return new Completable() {
+            @Override
+            protected void subscribeActual(CompletableObserver s) {
+                JSONObject requestBody = new JSONObject();
+                try {
+                    requestBody.put("commanderId", commanderId);
+                } catch (Exception e) {
+                    s.onError(e);
+                    return;
+                }
+                JsonObjectRequest request = new JsonObjectRequest(
+                        Request.Method.POST,
+                        ApiUrls.HOME_CONTROL_UNREGISTER_COMMANDER,
+                        requestBody,
+                        response -> s.onComplete(),
+                        s::onError
+                );
+                requestQueue.add(request);
+            }
+        };
+    }
+
     public Observable<Device> getDevicesOfUser() {
         return new Observable<Device>() {
             @Override
@@ -197,6 +222,29 @@ public class HomeControlService {
                                 observer.onError(e);
                             }
                         }, observer::onError);
+                requestQueue.add(request);
+            }
+        };
+    }
+
+    public Completable unregisterDevice(@NotNull String deviceId) {
+        return new Completable() {
+            @Override
+            protected void subscribeActual(CompletableObserver s) {
+                JSONObject requestBody = new JSONObject();
+                try {
+                    requestBody.put("commanderId", deviceId);
+                } catch (Exception e) {
+                    s.onError(e);
+                    return;
+                }
+                JsonObjectRequest request = new JsonObjectRequest(
+                        Request.Method.POST,
+                        ApiUrls.HOME_CONTROL_UNREGISTER_DEVICE,
+                        requestBody,
+                        response -> s.onComplete(),
+                        s::onError
+                );
                 requestQueue.add(request);
             }
         };

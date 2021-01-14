@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -26,6 +27,9 @@ import com.hieutm.homepi.ui.AppViewModelFactory;
 import com.hieutm.homepi.ui.registercommander.RegisterCommanderActivity;
 
 import java.util.ArrayList;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class CommanderFragment extends Fragment {
 
@@ -43,7 +47,7 @@ public class CommanderFragment extends Fragment {
         final ViewModelProvider modelProvider = new ViewModelProvider((ViewModelStoreOwner) activity, viewModelFactory);
         commanderViewModel = modelProvider.get(CommanderViewModel.class);
 
-        commanderViewModel.getErrors().observe(getActivity(), error -> {
+        commanderViewModel.getErrors().observe((LifecycleOwner) activity, error -> {
             if (error == null) {
                 return;
             }
@@ -51,17 +55,17 @@ public class CommanderFragment extends Fragment {
         });
 
         ProgressBar progressBar = root.findViewById(R.id.commander_progress_bar);
-        commanderViewModel.getIsLoading().observe(getActivity(), isLoading -> progressBar.setVisibility(isLoading? View.VISIBLE : View.INVISIBLE));
+        commanderViewModel.getIsLoading().observe((LifecycleOwner) activity, isLoading -> progressBar.setVisibility(isLoading? View.VISIBLE : View.INVISIBLE));
 
         RecyclerView commanderListView = root.findViewById(R.id.commander_list_view);
         CommanderListAdapter adapter = new CommanderListAdapter(new ArrayList<>(), this::showBottomSheet);
         commanderListView.setAdapter(adapter);
-        commanderListView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        commanderViewModel.getCommanders().observe(getActivity(), adapter::setCommanders);
+        commanderListView.addItemDecoration(new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL));
+        commanderViewModel.getCommanders().observe((LifecycleOwner) activity, adapter::setCommanders);
 
         FloatingActionButton registerCommander = root.findViewById(R.id.register_commander_fab);
         registerCommander.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), RegisterCommanderActivity.class);
+            Intent intent = new Intent(activity, RegisterCommanderActivity.class);
             startActivity(intent);
         });
 
@@ -73,7 +77,11 @@ public class CommanderFragment extends Fragment {
     }
 
     private void showBottomSheet(Commander commander) {
-        CommanderBottomSheetFragment bottomSheet = new CommanderBottomSheetFragment(commander, c -> commanderViewModel.unregisterCommander(c.getId()));
+        CommanderBottomSheetFragment bottomSheet = new CommanderBottomSheetFragment(commander, c -> commanderViewModel
+                .unregisterCommander(c.getId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe());
         bottomSheet.show(getParentFragmentManager(), "Commander Bottom Sheet");
     }
 

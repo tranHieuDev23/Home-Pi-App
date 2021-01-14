@@ -15,6 +15,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+
 public class CommanderViewModel extends ViewModel {
     private final MutableLiveData<List<Commander>> commanders;
     private final MutableLiveData<Integer> errors;
@@ -41,8 +44,18 @@ public class CommanderViewModel extends ViewModel {
         return isLoading;
     }
 
-    public void unregisterCommander(@NotNull String commanderId) {
-        removeCommander(commanderId);
+    public Completable unregisterCommander(@NotNull String commanderId) {
+        return new Completable() {
+            @SuppressLint("CheckResult")
+            @Override
+            protected void subscribeActual(CompletableObserver s) {
+                isLoading.postValue(true);
+                homeControlService
+                        .unregisterCommander(commanderId)
+                        .doFinally(() -> isLoading.postValue(false))
+                        .subscribe(() -> removeCommander(commanderId), throwable -> errors.setValue(R.string.error_cannot_connect));
+            }
+        };
     }
 
     @SuppressLint("CheckResult")
@@ -55,11 +68,13 @@ public class CommanderViewModel extends ViewModel {
     }
 
     private void addCommander(@NotNull Commander commander) {
+        //noinspection ConstantConditions
         commanders.getValue().add(commander);
         commanders.setValue(commanders.getValue());
     }
 
     private void removeCommander(@NotNull String commanderId) {
+        //noinspection ConstantConditions
         commanders.getValue().removeIf(item -> item.getId().equals(commanderId));
         commanders.setValue(commanders.getValue());
     }

@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -26,6 +27,9 @@ import com.hieutm.homepi.ui.AppViewModelFactory;
 import com.hieutm.homepi.ui.registerdevice.RegisterDeviceActivity;
 
 import java.util.ArrayList;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class DeviceFragment extends Fragment {
 
@@ -43,26 +47,26 @@ public class DeviceFragment extends Fragment {
         final ViewModelProvider modelProvider = new ViewModelProvider((ViewModelStoreOwner) activity, viewModelFactory);
         deviceViewModel = modelProvider.get(DeviceViewModel.class);
 
-        deviceViewModel.getErrors().observe(getActivity(), error -> {
+        deviceViewModel.getErrors().observe((LifecycleOwner) activity, error -> {
             if (error == null) {
                 return;
             }
-            Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, error, Toast.LENGTH_SHORT).show();
         });
 
         ProgressBar progressBar = root.findViewById(R.id.device_progress_bar);
-        deviceViewModel.getIsLoading().observe(getActivity(), isLoading -> progressBar.setVisibility(isLoading? View.VISIBLE : View.INVISIBLE));
+        deviceViewModel.getIsLoading().observe((LifecycleOwner) activity, isLoading -> progressBar.setVisibility(isLoading ? View.VISIBLE : View.INVISIBLE));
 
 
         RecyclerView deviceListView = root.findViewById(R.id.device_list_view);
         DeviceListAdapter adapter = new DeviceListAdapter(new ArrayList<>(), this::showBottomSheet);
         deviceListView.setAdapter(adapter);
-        deviceListView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        deviceViewModel.getDevices().observe(getActivity(), adapter::setDevices);
+        deviceListView.addItemDecoration(new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL));
+        deviceViewModel.getDevices().observe((LifecycleOwner) activity, adapter::setDevices);
 
         FloatingActionButton registerCommander = root.findViewById(R.id.register_device_fab);
         registerCommander.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), RegisterDeviceActivity.class);
+            Intent intent = new Intent(activity, RegisterDeviceActivity.class);
             startActivity(intent);
         });
 
@@ -74,7 +78,11 @@ public class DeviceFragment extends Fragment {
     }
 
     private void showBottomSheet(Device device) {
-        DeviceBottomSheetFragment bottom = new DeviceBottomSheetFragment(device, d -> deviceViewModel.unregisterDevice(d.getId()));
+        DeviceBottomSheetFragment bottom = new DeviceBottomSheetFragment(device, d -> deviceViewModel
+                .unregisterDevice(d.getId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe());
         bottom.show(getParentFragmentManager(), "Device Bottom Sheet");
     }
 
