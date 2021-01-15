@@ -3,17 +3,23 @@
     <string name="main_activity_home_pi_logo">Home Pi Logo</string>
     <string name="error_cannot_connect">Cannot connect to Home Pi server</string>
 
-    <string name="login_activity_title">Login Activity</string>
+    <string name="login_activity_title">Sign in</string>
+    <string name="login_activity_prompt_display_name">Display name</string>
     <string name="login_activity_prompt_username">Username</string>
     <string name="login_activity_prompt_password">Password</string>
-    <string name="login_activity_action_sign_in">Sign in or register</string>
-    <string name="login_activity_action_sign_in_short">Sign in</string>
+    <string name="login_activity_prompt_password_retype">Retype password</string>
+    <string name="login_activity_sign_in">Sign in</string>
+    <string name="login_activity_sign_up">Sign up</string>
+    <string name="login_activity_dont_have_an_account">Don\'t have an account?</string>
+    <string name="login_activity_already_have_an_account">Already have an account?</string>
+    <string name="login_activity_invalid_display_name">Display name must not be empty</string>
+    <string name="login_activity_invalid_username">Username muse be >6 characters and contain only alphanumeric characters</string>
+    <string name="login_activity_invalid_password">Password must be >8 characters, with at least one lowercase character, one uppercase character and one digit</string>
+    <string name="login_activity_invalid_password_retype">Retyped password is not equal to original password</string>
     <string name="login_activity_welcome">"Welcome!"</string>
-    <string name="login_activity_invalid_username">Not a valid username</string>
-    <string name="login_activity_invalid_password">Password must be >5 characters</string>
-    <string name="login_activity_login_failed">"Login failed"</string>
+    <string name="login_activity_submit_failed">An error happened</string>
 
-    <string name="home_activity_title">Main Activity</string>
+    <string name="home_activity_title">Home</string>
     <string name="home_activity_commanders">Commanders</string>
     <string name="home_activity_devices">Devices</string>
     <string name="home_activity_settings">Settings</string>

@@ -6,6 +6,7 @@ public class ApiUrls {
     private static final String BASE_URL = "https://1ecea3c289c9.ngrok.io";
     public static final String AUTH_VALIDATE_URL = BASE_URL + "/api/auth/validate";
     public static final String AUTH_LOGIN_URL = BASE_URL + "/api/auth/login";
+    public static final String AUTH_SIGN_UP_URL = BASE_URL + "/api/auth/register";
     public static final String AUTH_LOGOUT_URL = BASE_URL + "/api/auth/logout";
 
     public static final String HOME_CONTROL_GET_COMMANDERS = BASE_URL + "/api/home-control/get-commanders";

@@ -69,7 +69,7 @@ public class AuthenticationService {
         };
     }
 
-    public Maybe<LoggedInUser> logIn(String username, String password) {
+    public Maybe<LoggedInUser> signIn(String username, String password) {
         return new Maybe<LoggedInUser>() {
             @Override
             protected void subscribeActual(MaybeObserver<? super LoggedInUser> observer) {
@@ -93,6 +93,32 @@ public class AuthenticationService {
                     } catch (JSONException e) {
                         observer.onError(e);
                     }
+                }, observer::onError);
+                requestQueue.add(request);
+            }
+        };
+    }
+
+    public Maybe<LoggedInUser> signUp(String displayName, String username, String password) {
+        return new Maybe<LoggedInUser>() {
+            @Override
+            protected void subscribeActual(MaybeObserver<? super LoggedInUser> observer) {
+                if (currentUser != null) {
+                    observer.onError(new RuntimeException("Already logged in"));
+                    return;
+                }
+                JSONObject requestBody = new JSONObject();
+                try {
+                    requestBody.put("displayName", displayName);
+                    requestBody.put("username", username);
+                    requestBody.put("password", password);
+                } catch (JSONException e) {
+                    observer.onError(e);
+                    return;
+                }
+                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ApiUrls.AUTH_SIGN_UP_URL, requestBody, response -> {
+                    currentUser = new LoggedInUser(username, displayName);
+                    observer.onSuccess(currentUser);
                 }, observer::onError);
                 requestQueue.add(request);
             }
