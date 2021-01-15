@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -59,10 +60,14 @@ public class DeviceFragment extends Fragment {
 
 
         RecyclerView deviceListView = root.findViewById(R.id.device_list_view);
+        TextView deviceEmptyTextView = root.findViewById(R.id.device_empty_text_view);
         DeviceListAdapter adapter = new DeviceListAdapter(new ArrayList<>(), this::showBottomSheet);
         deviceListView.setAdapter(adapter);
         deviceListView.addItemDecoration(new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL));
-        deviceViewModel.getDevices().observe((LifecycleOwner) activity, adapter::setDevices);
+        deviceViewModel.getDevices().observe((LifecycleOwner) activity, devices -> {
+            adapter.setDevices(devices);
+            deviceEmptyTextView.setVisibility(devices.isEmpty()? View.VISIBLE : View.GONE);
+        });
 
         FloatingActionButton registerCommander = root.findViewById(R.id.register_device_fab);
         registerCommander.setOnClickListener(v -> {

@@ -15,6 +15,9 @@ import com.hieutm.homepi.auth.AuthenticationService;
 import com.hieutm.homepi.ui.home.HomeActivity;
 import com.hieutm.homepi.ui.login.LoginActivity;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
 public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
@@ -30,16 +33,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         final AuthenticationService authService = AuthenticationService.getInstance(getApplicationContext());
-        authService.getCurrentUser().subscribe(currentUser -> {
-            openHomeActivity();
-        }, error -> {
-            Log.e(AuthenticationService.class.getName(), error.getMessage());
+        authService
+                .getCurrentUser()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(currentUser -> openHomeActivity(), error -> {
             Toast.makeText(MainActivity.this, R.string.error_cannot_connect, Toast.LENGTH_LONG).show();
             finish();
-        }, () -> {
-            //noinspection Convert2MethodRef
-            openLoginActivity();
-        });
+        }, this::openLoginActivity);
     }
 
     private void openLoginActivity() {

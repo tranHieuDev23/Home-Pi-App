@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -58,10 +59,14 @@ public class CommanderFragment extends Fragment {
         commanderViewModel.getIsLoading().observe((LifecycleOwner) activity, isLoading -> progressBar.setVisibility(isLoading? View.VISIBLE : View.INVISIBLE));
 
         RecyclerView commanderListView = root.findViewById(R.id.commander_list_view);
+        TextView commanderEmptyTextView = root.findViewById(R.id.commander_empty_text_view);
         CommanderListAdapter adapter = new CommanderListAdapter(new ArrayList<>(), this::showBottomSheet);
         commanderListView.setAdapter(adapter);
         commanderListView.addItemDecoration(new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL));
-        commanderViewModel.getCommanders().observe((LifecycleOwner) activity, adapter::setCommanders);
+        commanderViewModel.getCommanders().observe((LifecycleOwner) activity, commanders -> {
+            adapter.setCommanders(commanders);
+            commanderEmptyTextView.setVisibility(commanders.isEmpty()? View.VISIBLE : View.GONE);
+        });
 
         FloatingActionButton registerCommander = root.findViewById(R.id.register_commander_fab);
         registerCommander.setOnClickListener(v -> {

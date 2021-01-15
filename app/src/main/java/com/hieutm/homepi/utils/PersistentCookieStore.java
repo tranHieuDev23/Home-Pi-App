@@ -14,7 +14,7 @@ import java.util.List;
 public class PersistentCookieStore implements CookieStore {
     private static final String COOKIE_PREFERENCES_FILE = "COOKIE_PREFERENCES_FILE";
     private static final String SESSION_COOKIE_KEY = "SessionCookie";
-    private static final String SESSION_COOKIE_NAME = "session";
+    private static final String SESSION_COOKIE_NAME = "HomePiAuth";
 
     private final SharedPreferences cookiePrefs;
     private final CookieStore baseCookieStore;

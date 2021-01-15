@@ -233,7 +233,7 @@ public class HomeControlService {
             protected void subscribeActual(CompletableObserver s) {
                 JSONObject requestBody = new JSONObject();
                 try {
-                    requestBody.put("commanderId", deviceId);
+                    requestBody.put("deviceId", deviceId);
                 } catch (Exception e) {
                     s.onError(e);
                     return;
