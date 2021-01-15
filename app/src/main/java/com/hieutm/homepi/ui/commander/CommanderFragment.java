@@ -73,7 +73,7 @@ public class CommanderFragment extends Fragment {
         FloatingActionButton registerCommander = root.findViewById(R.id.register_commander_fab);
         registerCommander.setOnClickListener(v -> {
             Intent intent = new Intent(activity, RegisterCommanderActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, REGISTER_COMMANDER_ACTIVITY_REQUEST_CODE);
         });
 
         setHasOptionsMenu(true);
