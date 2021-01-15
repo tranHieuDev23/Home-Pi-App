@@ -123,6 +123,7 @@ public class RegisterCommanderActivity extends AppCompatActivity {
         return true;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         boolean bluetoothEnabled = viewModel.getIsBluetoothEnabled().getValue();
@@ -134,6 +135,7 @@ public class RegisterCommanderActivity extends AppCompatActivity {
         return super.onPrepareOptionsMenu(menu);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.register_commander_refresh_option) {
@@ -152,6 +154,7 @@ public class RegisterCommanderActivity extends AppCompatActivity {
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -186,6 +189,7 @@ public class RegisterCommanderActivity extends AppCompatActivity {
                         return;
                     }
                     Toast.makeText(getBaseContext(), R.string.register_commander_register_success, Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
                     finish();
                 });
     }

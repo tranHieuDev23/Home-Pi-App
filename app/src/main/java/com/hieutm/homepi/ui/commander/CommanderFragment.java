@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
@@ -33,6 +34,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class CommanderFragment extends Fragment {
+    private static final int REGISTER_COMMANDER_ACTIVITY_REQUEST_CODE = 1;
 
     private CommanderViewModel commanderViewModel;
 
@@ -88,6 +90,16 @@ public class CommanderFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe());
         bottomSheet.show(getParentFragmentManager(), "Commander Bottom Sheet");
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REGISTER_COMMANDER_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                commanderViewModel.refresh();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

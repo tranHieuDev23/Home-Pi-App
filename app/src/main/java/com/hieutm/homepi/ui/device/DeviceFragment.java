@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
@@ -33,6 +34,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class DeviceFragment extends Fragment {
+    private static final int REGISTER_DEVICE_ACTIVITY_REQUEST_CODE = 1;
 
     private DeviceViewModel deviceViewModel;
 
@@ -72,7 +74,7 @@ public class DeviceFragment extends Fragment {
         FloatingActionButton registerCommander = root.findViewById(R.id.register_device_fab);
         registerCommander.setOnClickListener(v -> {
             Intent intent = new Intent(activity, RegisterDeviceActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, REGISTER_DEVICE_ACTIVITY_REQUEST_CODE);
         });
 
         setHasOptionsMenu(true);
@@ -89,6 +91,16 @@ public class DeviceFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe());
         bottom.show(getParentFragmentManager(), "Device Bottom Sheet");
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REGISTER_DEVICE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                deviceViewModel.refresh();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
