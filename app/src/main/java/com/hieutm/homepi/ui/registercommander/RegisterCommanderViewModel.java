@@ -90,38 +90,46 @@ public class RegisterCommanderViewModel extends ViewModel {
             @Override
             protected void subscribeActual(@NonNull SingleObserver<? super Commander> observer) {
                 isLoading.postValue(true);
-                authService.getCurrentUser().subscribe(user -> helper
-                        .connect()
-                        .andThen(helper.getWifiStatus())
-                        .subscribe((connected, connectThrowable) -> {
-                            if (connectThrowable != null) {
-                                observer.onError(connectThrowable);
-                                return;
-                            }
-                            if (!connected) {
-                                observer.onError(new DeviceNotConnectedToWifiException());
-                                return;
-                            }
-                            helper
-                                    .getDeviceId()
-                                    .subscribe((id, getIdThrowable) -> {
-                                        if (getIdThrowable != null) {
-                                            observer.onError(getIdThrowable);
-                                            return;
-                                        }
-                                        homeControlService
-                                                .registerCommander(id)
-                                                .subscribe((response, registerThrowable) -> {
-                                                    if (registerThrowable != null) {
-                                                        observer.onError(registerThrowable);
-                                                        return;
-                                                    }
-                                                    helper
-                                                            .registerDevice(response.getToken())
-                                                            .subscribe(() -> observer.onSuccess(response.getCommander()), observer::onError);
-                                                });
-                                    });
-                        }), observer::onError, () -> observer.onError(new RuntimeException("User is not logged in")));
+                authService
+                        .getCurrentUser()
+                        .subscribe(user -> helper.connect()
+                                .andThen(helper.getDeviceId())
+                                .subscribe((id, getIdThrowable) -> {
+                                    if (getIdThrowable != null) {
+                                        observer.onError(getIdThrowable);
+                                        return;
+                                    }
+                                    homeControlService
+                                            .checkDeviceOwnership(id)
+                                            .subscribe((isRegistered, checkOwnershipThrowable) -> {
+                                                if (checkOwnershipThrowable != null) {
+                                                    observer.onError(checkOwnershipThrowable);
+                                                    return;
+                                                }
+                                                helper.getWifiStatus()
+                                                        .subscribe((connected, connectThrowable) -> {
+                                                            if (connectThrowable != null) {
+                                                                observer.onError(connectThrowable);
+                                                                return;
+                                                            }
+                                                            if (!connected) {
+                                                                observer.onError(new CommanderNotConnectedToWifiException());
+                                                                return;
+                                                            }
+                                                            homeControlService
+                                                                    .registerCommander(id)
+                                                                    .subscribe((response, registerThrowable) -> {
+                                                                        if (registerThrowable != null) {
+                                                                            observer.onError(registerThrowable);
+                                                                            return;
+                                                                        }
+                                                                        helper
+                                                                                .registerDevice(response.getToken())
+                                                                                .subscribe(() -> observer.onSuccess(response.getCommander()), observer::onError);
+                                                                    });
+                                                        });
+                                            });
+                                }), observer::onError, () -> observer.onError(new RuntimeException("User has not logged in")));
             }
         }.doFinally(() -> {
             isLoading.postValue(false);

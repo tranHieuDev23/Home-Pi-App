@@ -77,6 +77,35 @@ public class HomeControlService {
         };
     }
 
+    public Single<Boolean> checkCommanderOwnership(String commanderId) {
+        return new Single<Boolean>() {
+            @Override
+            protected void subscribeActual(@NonNull SingleObserver<? super Boolean> observer) {
+                JSONObject requestBody = new JSONObject();
+                try {
+                    requestBody.put("commanderId", commanderId);
+                } catch (Exception e) {
+                    observer.onError(e);
+                    return;
+                }
+                JsonObjectRequest request = new JsonObjectRequest(
+                        Request.Method.POST,
+                        ApiUrls.HOME_CONTROL_CHECK_COMMANDER_OWNERSHIP,
+                        requestBody,
+                        response -> {
+                            try {
+                                boolean isRegistered = response.getBoolean("isRegistered");
+                                observer.onSuccess(isRegistered);
+                            } catch (JSONException e) {
+                                observer.onError(e);
+                            }
+                        }, observer::onError);
+                requestQueue.add(request);
+
+            }
+        };
+    }
+
     public static class CommanderRegistrationResponse {
         private final Commander commander;
         private final String token;
@@ -173,6 +202,35 @@ public class HomeControlService {
                             }
                         }, observer::onError);
                 requestQueue.add(request);
+            }
+        };
+    }
+
+    public Single<Boolean> checkDeviceOwnership(String deviceId) {
+        return new Single<Boolean>() {
+            @Override
+            protected void subscribeActual(@NonNull SingleObserver<? super Boolean> observer) {
+                JSONObject requestBody = new JSONObject();
+                try {
+                    requestBody.put("deviceId", deviceId);
+                } catch (Exception e) {
+                    observer.onError(e);
+                    return;
+                }
+                JsonObjectRequest request = new JsonObjectRequest(
+                        Request.Method.POST,
+                        ApiUrls.HOME_CONTROL_CHECK_DEVICE_OWNERSHIP,
+                        requestBody,
+                        response -> {
+                            try {
+                                boolean isRegistered = response.getBoolean("isRegistered");
+                                observer.onSuccess(isRegistered);
+                            } catch (JSONException e) {
+                                observer.onError(e);
+                            }
+                        }, observer::onError);
+                requestQueue.add(request);
+
             }
         };
     }
