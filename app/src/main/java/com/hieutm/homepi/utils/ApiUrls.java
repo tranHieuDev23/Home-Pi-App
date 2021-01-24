@@ -12,9 +12,11 @@ public class ApiUrls {
     public static final String HOME_CONTROL_GET_COMMANDERS = BASE_URL + "/api/home-control/get-commanders";
     public static final String HOME_CONTROL_CHECK_COMMANDER_OWNERSHIP = BASE_URL + "/api/home-control/check-commander-ownership";
     public static final String HOME_CONTROL_REGISTER_COMMANDER = BASE_URL + "/api/home-control/register-commander";
+    public static final String HOME_CONTROL_RENAME_COMMANDER = BASE_URL + "/api/home-control/rename-commander";
     public static final String HOME_CONTROL_UNREGISTER_COMMANDER = BASE_URL + "/api/home-control/unregister-commander";
     public static final String HOME_CONTROL_GET_DEVICES = BASE_URL + "/api/home-control/get-devices";
     public static final String HOME_CONTROL_CHECK_DEVICE_OWNERSHIP = BASE_URL + "/api/home-control/check-device-ownership";
     public static final String HOME_CONTROL_REGISTER_DEVICE = BASE_URL + "/api/home-control/register-device";
+    public static final String HOME_CONTROL_RENAME_DEVICE = BASE_URL + "/api/home-control/rename-device";
     public static final String HOME_CONTROL_UNREGISTER_DEVICE = BASE_URL + "/api/home-control/unregister-device";
 }

@@ -68,7 +68,7 @@ public class DeviceFragment extends Fragment {
         deviceListView.addItemDecoration(new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL));
         deviceViewModel.getDevices().observe((LifecycleOwner) activity, devices -> {
             adapter.setDevices(devices);
-            deviceEmptyTextView.setVisibility(devices.isEmpty()? View.VISIBLE : View.GONE);
+            deviceEmptyTextView.setVisibility(devices.isEmpty() ? View.VISIBLE : View.GONE);
         });
 
         FloatingActionButton registerCommander = root.findViewById(R.id.register_device_fab);
@@ -85,11 +85,19 @@ public class DeviceFragment extends Fragment {
     }
 
     private void showBottomSheet(Device device) {
-        DeviceBottomSheetFragment bottom = new DeviceBottomSheetFragment(device, d -> deviceViewModel
-                .unregisterDevice(d.getId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe());
+        DeviceBottomSheetFragment bottom = new DeviceBottomSheetFragment(device, d -> {
+            deviceViewModel
+                    .unregisterDevice(d.getId())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe();
+        }, newName -> {
+            deviceViewModel
+                    .renameDevice(device.getId(), newName)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe();
+        });
         bottom.show(getParentFragmentManager(), "Device Bottom Sheet");
     }
 

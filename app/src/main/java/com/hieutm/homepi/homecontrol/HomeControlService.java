@@ -155,6 +155,30 @@ public class HomeControlService {
         };
     }
 
+    public Completable renameCommander(@NotNull String commanderId, @NotNull String newName) {
+        return new Completable() {
+            @Override
+            protected void subscribeActual(CompletableObserver s) {
+                JSONObject requestBody = new JSONObject();
+                try {
+                    requestBody.put("commanderId", commanderId);
+                    requestBody.put("newName", newName);
+                } catch (Exception e) {
+                    s.onError(e);
+                    return;
+                }
+                JsonObjectRequest request = new JsonObjectRequest(
+                        Request.Method.POST,
+                        ApiUrls.HOME_CONTROL_RENAME_COMMANDER,
+                        requestBody,
+                        response -> s.onComplete(),
+                        s::onError
+                );
+                requestQueue.add(request);
+            }
+        };
+    }
+
     public Completable unregisterCommander(@NotNull String commanderId) {
         return new Completable() {
             @Override
@@ -280,6 +304,30 @@ public class HomeControlService {
                                 observer.onError(e);
                             }
                         }, observer::onError);
+                requestQueue.add(request);
+            }
+        };
+    }
+
+    public Completable renameDevice(@NotNull String deviceId, @NotNull String newName) {
+        return new Completable() {
+            @Override
+            protected void subscribeActual(CompletableObserver s) {
+                JSONObject requestBody = new JSONObject();
+                try {
+                    requestBody.put("deviceId", deviceId);
+                    requestBody.put("newName", newName);
+                } catch (Exception e) {
+                    s.onError(e);
+                    return;
+                }
+                JsonObjectRequest request = new JsonObjectRequest(
+                        Request.Method.POST,
+                        ApiUrls.HOME_CONTROL_RENAME_DEVICE,
+                        requestBody,
+                        response -> s.onComplete(),
+                        s::onError
+                );
                 requestQueue.add(request);
             }
         };

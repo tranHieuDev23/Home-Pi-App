@@ -58,7 +58,7 @@ public class CommanderFragment extends Fragment {
         });
 
         ProgressBar progressBar = root.findViewById(R.id.commander_progress_bar);
-        commanderViewModel.getIsLoading().observe((LifecycleOwner) activity, isLoading -> progressBar.setVisibility(isLoading? View.VISIBLE : View.INVISIBLE));
+        commanderViewModel.getIsLoading().observe((LifecycleOwner) activity, isLoading -> progressBar.setVisibility(isLoading ? View.VISIBLE : View.INVISIBLE));
 
         RecyclerView commanderListView = root.findViewById(R.id.commander_list_view);
         TextView commanderEmptyTextView = root.findViewById(R.id.commander_empty_text_view);
@@ -67,7 +67,7 @@ public class CommanderFragment extends Fragment {
         commanderListView.addItemDecoration(new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL));
         commanderViewModel.getCommanders().observe((LifecycleOwner) activity, commanders -> {
             adapter.setCommanders(commanders);
-            commanderEmptyTextView.setVisibility(commanders.isEmpty()? View.VISIBLE : View.GONE);
+            commanderEmptyTextView.setVisibility(commanders.isEmpty() ? View.VISIBLE : View.GONE);
         });
 
         FloatingActionButton registerCommander = root.findViewById(R.id.register_commander_fab);
@@ -84,11 +84,19 @@ public class CommanderFragment extends Fragment {
     }
 
     private void showBottomSheet(Commander commander) {
-        CommanderBottomSheetFragment bottomSheet = new CommanderBottomSheetFragment(commander, c -> commanderViewModel
-                .unregisterCommander(c.getId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe());
+        CommanderBottomSheetFragment bottomSheet = new CommanderBottomSheetFragment(commander, c -> {
+            commanderViewModel
+                    .unregisterCommander(c.getId())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe();
+        }, newName -> {
+            commanderViewModel
+                    .renameCommander(commander.getId(), newName)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe();
+        });
         bottomSheet.show(getParentFragmentManager(), "Commander Bottom Sheet");
     }
 

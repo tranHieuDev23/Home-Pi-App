@@ -70,4 +70,5 @@
     <string name="settings_cannot_logout">Cannot log out</string>
     <string name="commander_no_commander_registered">No data</string>
     <string name="device_no_device_registered">No data</string>
+    <string name="device_list_item_rename">Rename</string>
 </resources>

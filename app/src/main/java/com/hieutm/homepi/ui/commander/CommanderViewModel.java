@@ -44,6 +44,23 @@ public class CommanderViewModel extends ViewModel {
         return isLoading;
     }
 
+    public Completable renameCommander(@NotNull String commanderId, @NotNull String newName) {
+        return new Completable() {
+            @SuppressLint("CheckResult")
+            @Override
+            protected void subscribeActual(CompletableObserver s) {
+                isLoading.postValue(true);
+                homeControlService
+                        .renameCommander(commanderId, newName)
+                        .doFinally(() -> {
+                            isLoading.postValue(false);
+                            refresh();
+                        })
+                        .subscribe(() -> {}, s::onError);
+            }
+        };
+    }
+
     public Completable unregisterCommander(@NotNull String commanderId) {
         return new Completable() {
             @SuppressLint("CheckResult")
@@ -68,13 +85,11 @@ public class CommanderViewModel extends ViewModel {
     }
 
     private void addCommander(@NotNull Commander commander) {
-        //noinspection ConstantConditions
         commanders.getValue().add(commander);
         commanders.setValue(commanders.getValue());
     }
 
     private void removeCommander(@NotNull String commanderId) {
-        //noinspection ConstantConditions
         commanders.getValue().removeIf(item -> item.getId().equals(commanderId));
         commanders.setValue(commanders.getValue());
     }

@@ -65,7 +65,6 @@ public class ConnectWifiActivity extends AppCompatActivity {
         registerReceiver(receiver, filter);
 
         ActionBar actionBar = getSupportActionBar();
-        //noinspection ConstantConditions
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         final View enableBluetoothLayout = findViewById(R.id.connect_wifi_activity_enable_bluetooth_layout);
@@ -127,7 +126,7 @@ public class ConnectWifiActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        @SuppressWarnings("ConstantConditions") boolean isBluetoothEnabled = viewModel.getIsBluetoothEnabled().getValue();
+        boolean isBluetoothEnabled = viewModel.getIsBluetoothEnabled().getValue();
         menu.getItem(0).setVisible(isBluetoothEnabled);
         return super.onPrepareOptionsMenu(menu);
     }

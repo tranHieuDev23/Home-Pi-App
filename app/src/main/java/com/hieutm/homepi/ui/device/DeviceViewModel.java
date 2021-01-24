@@ -44,6 +44,23 @@ public class DeviceViewModel extends ViewModel {
         return isLoading;
     }
 
+    public Completable renameDevice(@NotNull String deviceId, @NotNull String newName) {
+        return new Completable() {
+            @SuppressLint("CheckResult")
+            @Override
+            protected void subscribeActual(CompletableObserver s) {
+                isLoading.postValue(true);
+                homeControlService
+                        .renameDevice(deviceId, newName)
+                        .doFinally(() -> {
+                            isLoading.postValue(false);
+                            refresh();
+                        })
+                        .subscribe(() -> {}, s::onError);
+            }
+        };
+    }
+
     public Completable unregisterDevice(@NotNull String deviceId) {
         return new Completable() {
             @SuppressLint("CheckResult")
@@ -70,13 +87,11 @@ public class DeviceViewModel extends ViewModel {
     }
 
     private void addDevice(@NotNull Device device) {
-        //noinspection ConstantConditions
         devices.getValue().add(device);
         devices.setValue(devices.getValue());
     }
 
     private void removeDevice(@NotNull String deviceId) {
-        //noinspection ConstantConditions
         devices.getValue().removeIf(item -> item.getId().equals(deviceId));
         devices.setValue(devices.getValue());
     }
